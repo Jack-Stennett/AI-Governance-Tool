@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Governance Strategy — v4</title>
+  <link rel="stylesheet" href="src/styles.css">
+  <script src="src/csv-parser.js"></script>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <h1>AI Governance Strategy — v4</h1>
+    <div id="phase-indicator">
+      <span class="phase-step active" data-phase="1">1</span>
+      <span class="phase-step" data-phase="2">2</span>
+      <span class="phase-step" data-phase="3">3</span>
+    </div>
+  </div>
+</header>
+
+<!-- PHASE 1: Narrative & Difficulty Selection -->
+<main id="phase1" class="phase active">
+  <section class="narrative-intro card">
+    <div class="narrative-text">
+      <h2>The AI Supremacy Race</h2>
+      <p>The earth has entered a race for AI supremacy. You are tasked to allocate global resources to ensure that humans emerge safely from this situation.</p>
+      
+      <p>You will pick what global posture to take, which mechanisms we need to implement this. But first, which world are we in?</p>
+      
+      <div class="world-choice">
+        <h3>Choose Your Reality:</h3>
+        <div class="world-options">
+          <label class="world-option">
+            <input type="radio" name="worldType" value="optimistic">
+            <div class="world-card">
+              <h4>The Optimistic World</h4>
+              <p>AI safety is manageable. With proper coordination and reasonable precautions, we can navigate this transition successfully. Multiple approaches can work.</p>
+            </div>
+          </label>
+          
+          <label class="world-option">
+            <input type="radio" name="worldType" value="yudkowskyian" checked>
+            <div class="world-card">
+              <h4>The Yudkowskyian World</h4>
+              <p>AI alignment is extraordinarily difficult. There is only a Narrow Path that can lead us to existential safety. Most strategies lead to failure.</p>
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section class="difficulty-selection card">
+    <h3>Select Difficulty Level:</h3>
+    <div class="difficulty-options">
+      <label class="difficulty-option">
+        <input type="radio" name="difficultyLevel" value="optimist">
+        <div class="difficulty-card">
+          <h4>Optimist (95°)</h4>
+          <p>Generous success probabilities</p>
+        </div>
+      </label>
+      
+      <label class="difficulty-option">
+        <input type="radio" name="difficultyLevel" value="realist" checked>
+        <div class="difficulty-card">
+          <h4>Realist (70°)</h4>
+          <p>Balanced expectations</p>
+        </div>
+      </label>
+      
+      <label class="difficulty-option">
+        <input type="radio" name="difficultyLevel" value="pessimist">
+        <div class="difficulty-card">
+          <h4>Pessimist (35°)</h4>
+          <p>Conservative success rates</p>
+        </div>
+      </label>
+      
+      <label class="difficulty-option">
+        <input type="radio" name="difficultyLevel" value="yudkowskyite">
+        <div class="difficulty-card">
+          <h4>Yudkowskyite (5°)</h4>
+          <p>Extremely narrow path to success</p>
+        </div>
+      </label>
+    </div>
+    
+    <div class="phase-actions">
+      <button id="proceedToPhase2" class="primary-btn" disabled>Begin Resource Allocation →</button>
+    </div>
+  </section>
+</main>
+
+<!-- PHASE 2: Resource Allocation -->
+<main id="phase2" class="phase">
+  <section class="resource-intro card">
+    <h2>Resource Allocation</h2>
+    <p class="sub">Your governments have rallied together. How much support have you secured for this critical mission?</p>
+    <div class="modebar">
+      <div class="modes">
+        <label><input type="radio" name="mode" value="easy"> Easy Mode: $400B budget, 40 Political Capital</label>
+        <label><input type="radio" name="mode" value="medium" checked> Medium Mode: $240B budget, 24 Political Capital</label>
+        <label><input type="radio" name="mode" value="hard"> Hard Mode: $160B budget, 16 Political Capital</label>
+      </div>
+      <div class="budget">
+        <span>Budget: <b>$<span id="moneyLeft">—</span>B</b></span>
+        <span>Political capital: <b><span id="pcLeft">—</span> PC</b></span>
+      </div>
+    </div>
+    
+    <div class="phase-actions">
+      <button id="proceedToPhase3" class="primary-btn">Continue to Strategy Selection →</button>
+    </div>
+  </section>
+</main>
+
+<!-- PHASE 3: Strategy & Governance Selection (Original Game) -->
+<main id="phase3" class="phase">
+  <section class="intro card">
+    <p><b>Briefing:</b> You have a fixed budget and political capital. Pick <i>one</i> strategic posture (free), then purchase institutions, laws, and technical controls within your constraints. Some choices require others; some complement or clash. When ready, <b>Lock In</b>, then roll the outcome.</p>
+    
+    <div class="search-container">
+      <input type="text" id="searchInput" class="search-input" placeholder="Search governance options..." aria-label="Search governance options">
+    </div>
+  </section>
+
+  <section class="palette">
+    <div class="col">
+      <h2>1) Strategic postures (pick one)</h2>
+      <div id="postures" class="list"></div>
+    </div>
+    <div class="col">
+      <h2>2) Institutional architectures</h2>
+      <div id="institutions" class="list"></div>
+    </div>
+    <div class="col">
+      <h2>3) Regulatory / legal mechanisms</h2>
+      <div id="mechanisms" class="list"></div>
+    </div>
+    <div class="col">
+      <h2>4) Technical & infrastructural controls</h2>
+      <div id="controls" class="list"></div>
+    </div>
+  </section>
+
+  <section class="build">
+    <h2>Your build</h2>
+    <div class="grid">
+      <div>
+        <h3>Posture</h3>
+        <div id="picked-posture" class="picked"></div>
+      </div>
+      <div>
+        <h3>Institutions</h3>
+        <div id="picked-institutions" class="picked"></div>
+      </div>
+      <div>
+        <h3>Laws & regulatory</h3>
+        <div id="picked-mechanisms" class="picked"></div>
+      </div>
+      <div>
+        <h3>Technical controls</h3>
+        <div id="picked-controls" class="picked"></div>
+      </div>
+    </div>
+
+    <div class="actions actions-topline">
+      <span class="hint">Select within budget. Requirements & synergies apply.</span>
+    </div>
+    <div class="actions">
+      <button id="lockBtn">Lock In</button>
+      <button id="resetBtn">Reset All</button>
+      <button id="exportBtn">Export Build</button>
+    </div>
+    <div class="actions">
+      <button id="rollBtn" disabled>Roll outcome</button>
+      <button id="mcBtn" disabled>Monte Carlo × 1000</button>
+      <button id="helpBtn">Help & Guide</button>
+    </div>
+  </section>
+
+  <section class="results">
+    <div id="resultCard" class="card muted">
+      <h3>Outcome</h3>
+      <p>Choose, Lock In, then roll. Temperature and coherence matter; low temperatures make failure commonplace.</p>
+    </div>
+    <div id="mcCard" class="card hidden">
+      <h3>Monte Carlo</h3>
+      <canvas id="mcChart" width="640" height="220"></canvas>
+      <p id="mcSummary" class="small"></p>
+    </div>
+  </section>
+</main>
+
+<div id="tooltip" class="tooltip" role="tooltip"></div>
+
+<!-- Legacy temp display for compatibility -->
+<div id="temp-display" style="display: none;">
+  <span id="tempVal">0.50</span>
+  <select id="difficultyMode">
+    <option value="optimist">Optimist (95°)</option>
+    <option value="realist" selected>Realist (70°)</option>
+    <option value="pessimist">Pessimist (35°)</option>
+    <option value="yudkowskyite">Yudkowskyite (5°)</option>
+  </select>
+</div>
+
+<footer>
+  <span>v4 — budgets + costs + compatibility. No LLMs. Still a toy.</span>
+</footer>
+
+<script src="src/app.js"></script>
+<script>
+// Phase Management System
+let currentPhase = 1;
+
+// Phase navigation functions
+function showPhase(phaseNumber) {
+  // Hide all phases
+  document.querySelectorAll('.phase').forEach(phase => {
+    phase.classList.remove('active');
+  });
+  
+  // Show target phase
+  document.getElementById(`phase${phaseNumber}`).classList.add('active');
+  
+  // Update phase indicator
+  document.querySelectorAll('.phase-step').forEach((step, index) => {
+    step.classList.toggle('active', index + 1 <= phaseNumber);
+    step.classList.toggle('completed', index + 1 < phaseNumber);
+  });
+  
+  currentPhase = phaseNumber;
+}
+
+// Phase 1 logic
+function initPhase1() {
+  const worldInputs = document.querySelectorAll('input[name="worldType"]');
+  const difficultyInputs = document.querySelectorAll('input[name="difficultyLevel"]');
+  const proceedBtn = document.getElementById('proceedToPhase2');
+  
+  function checkPhase1Complete() {
+    const worldSelected = document.querySelector('input[name="worldType"]:checked');
+    const difficultySelected = document.querySelector('input[name="difficultyLevel"]:checked');
+    proceedBtn.disabled = !(worldSelected && difficultySelected);
+  }
+  
+  // Add event listeners
+  worldInputs.forEach(input => input.addEventListener('change', checkPhase1Complete));
+  difficultyInputs.forEach(input => input.addEventListener('change', () => {
+    checkPhase1Complete();
+    // Update the legacy difficulty mode selector for compatibility
+    const difficultyMode = document.getElementById('difficultyMode');
+    if (difficultyMode) {
+      difficultyMode.value = input.value;
+      // Trigger change event for existing game logic
+      difficultyMode.dispatchEvent(new Event('change'));
+    }
+  }));
+  
+  proceedBtn.addEventListener('click', () => {
+    showPhase(2);
+  });
+  
+  // Initial check
+  checkPhase1Complete();
+}
+
+// Phase 2 logic  
+function initPhase2() {
+  const proceedBtn = document.getElementById('proceedToPhase3');
+  
+  proceedBtn.addEventListener('click', () => {
+    showPhase(3);
+  });
+}
+
+// Initialize phases when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  initPhase1();
+  initPhase2();
+  
+  // Start with phase 1
+  showPhase(1);
+});
+</script>
+</body>
+</html>

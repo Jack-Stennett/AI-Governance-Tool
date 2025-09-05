@@ -156,3 +156,578 @@ button:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
     --outline: #666666;
   }
 }
+/* Phase System Styles */
+.phase {
+  display: none;
+}
+
+.phase.active {
+  display: block;
+}
+
+#phase-indicator {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.phase-step {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: #e5e7eb;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.phase-step.active {
+  background: #3b82f6;
+  color: white;
+}
+
+.phase-step.completed {
+  background: #10b981;
+  color: white;
+}
+
+/* Phase 1: Narrative Styles */
+.narrative-intro {
+  max-width: 800px;
+  margin: 2rem auto;
+}
+
+.narrative-text h2 {
+  color: #1f2937;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+}
+
+.narrative-text p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  color: #374151;
+}
+
+.world-choice {
+  margin: 2rem 0;
+}
+
+.world-choice h3 {
+  color: #1f2937;
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+}
+
+.world-options {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.world-option {
+  cursor: pointer;
+}
+
+.world-option input[type="radio"] {
+  display: none;
+}
+
+.world-card {
+  border: 2px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  background: #f9fafb;
+  transition: all 0.3s ease;
+}
+
+.world-option:hover .world-card {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.world-option input[type="radio"]:checked + .world-card {
+  border-color: #3b82f6;
+  background: #dbeafe;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.world-card h4 {
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.world-card p {
+  color: #6b7280;
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Difficulty Selection Styles */
+.difficulty-selection {
+  max-width: 800px;
+  margin: 2rem auto;
+}
+
+.difficulty-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.difficulty-option {
+  cursor: pointer;
+}
+
+.difficulty-option input[type="radio"] {
+  display: none;
+}
+
+.difficulty-card {
+  border: 2px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  background: #f9fafb;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.difficulty-option:hover .difficulty-card {
+  border-color: #f59e0b;
+  background: #fef3c7;
+}
+
+.difficulty-option input[type="radio"]:checked + .difficulty-card {
+  border-color: #f59e0b;
+  background: #fde68a;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+.difficulty-card h4 {
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.difficulty-card p {
+  color: #6b7280;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* Phase 2: Resource Allocation Styles */
+.resource-intro {
+  max-width: 800px;
+  margin: 2rem auto;
+}
+
+.resource-intro h2 {
+  color: #1f2937;
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+}
+
+/* Action Buttons */
+.phase-actions {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.primary-btn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.primary-btn:hover:not(:disabled) {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.primary-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .world-options,
+  .difficulty-options {
+    grid-template-columns: 1fr;
+  }
+  
+  #phase-indicator {
+    justify-content: center;
+  }
+  
+  .phase-step {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Legacy compatibility - ensure existing styles work */
+.card {
+  background: white;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+}
+
+.modebar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  margin: 1rem 0;
+}
+
+.modes {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.budget {
+  display: flex;
+  gap: 1rem;
+  font-weight: 600;
+}/* Updated Phase System Styles */
+
+/* Phase 1: Single section with 4 difficulty boxes */
+.difficulty-selection-main {
+  max-width: 1000px;
+  margin: 2rem auto;
+}
+
+.intro-text {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.intro-text h2 {
+  color: #1f2937;
+  font-size: 2.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.intro-text p {
+  font-size: 1.2rem;
+  color: #4b5563;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.difficulty-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.difficulty-option .difficulty-card {
+  border: 2px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 2rem;
+  background: #fefefe;
+  transition: all 0.3s ease;
+  height: 100%;
+  min-height: 200px;
+}
+
+.difficulty-option:hover .difficulty-card {
+  border-color: #3b82f6;
+  background: #f0f9ff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.difficulty-option input[type="radio"]:checked + .difficulty-card {
+  border-color: #2563eb;
+  background: #dbeafe;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.difficulty-card h4 {
+  color: #1f2937;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.difficulty-narrative {
+  text-align: left;
+}
+
+.difficulty-narrative p {
+  color: #374151;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.difficulty-desc {
+  font-size: 0.9rem !important;
+  color: #6b7280 !important;
+  font-style: italic;
+  text-align: center;
+  margin-top: 1rem !important;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 1rem;
+}
+
+/* Phase 2: Resource allocation with narrative */
+.resource-narrative {
+  max-width: 900px;
+  margin: 2rem auto;
+}
+
+.resource-narrative h2 {
+  color: #1f2937;
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.narrative-content {
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.narrative-content p {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: #4b5563;
+  margin-bottom: 1.5rem;
+}
+
+.resource-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.resource-option {
+  cursor: pointer;
+}
+
+.resource-option input[type="radio"] {
+  display: none;
+}
+
+.resource-card {
+  border: 2px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  background: #fefefe;
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.resource-option:hover .resource-card {
+  border-color: #10b981;
+  background: #f0fdf4;
+  transform: translateY(-2px);
+}
+
+.resource-option input[type="radio"]:checked + .resource-card {
+  border-color: #059669;
+  background: #d1fae5;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+}
+
+.resource-card h4 {
+  color: #1f2937;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.resource-details p:first-child {
+  font-weight: 600;
+  color: #059669;
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.resource-details p:last-child {
+  color: #374151;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.current-allocation {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 2rem 0;
+}
+
+.budget-display {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  font-size: 1.1rem;
+}
+
+.budget-display span {
+  color: #374151;
+}
+
+/* Phase 4: Final results */
+.final-results {
+  max-width: 1200px;
+  margin: 2rem auto;
+}
+
+.final-results h2 {
+  color: #1f2937;
+  font-size: 2.2rem;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.results-layout {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  gap: 3rem;
+  margin-bottom: 3rem;
+  align-items: start;
+}
+
+.results-visual {
+  display: flex;
+  justify-content: center;
+}
+
+.results-image-placeholder {
+  width: 100%;
+  max-width: 400px;
+}
+
+.results-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.result-summary, .mc-results {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+}
+
+.result-summary h3, .mc-results h3 {
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.strategy-summary {
+  background: #fefefe;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+}
+
+.strategy-summary h4 {
+  color: #1f2937;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.summary-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.summary-section:last-child {
+  border-bottom: none;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.summary-section strong {
+  color: #374151;
+}
+
+.secondary-btn {
+  background: #6b7280;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-left: 1rem;
+}
+
+.secondary-btn:hover {
+  background: #4b5563;
+}
+
+/* Responsive updates */
+@media (max-width: 768px) {
+  .difficulty-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .resource-options {
+    grid-template-columns: 1fr;
+  }
+  
+  .results-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .results-image-placeholder {
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  
+  .budget-display {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+  
+  .intro-text h2 {
+    font-size: 1.8rem;
+  }
+  
+  .final-results h2 {
+    font-size: 1.8rem;
+  }
+}
+
+/* 4-phase indicator */
+#phase-indicator .phase-step:nth-child(4) {
+  margin-left: 0.5rem;
+}

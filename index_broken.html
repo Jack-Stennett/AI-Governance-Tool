@@ -225,7 +225,7 @@
             <rect x="160" y="140" width="80" height="60" rx="4" fill="#e5e7eb"/>
             <text x="200" y="220" text-anchor="middle" fill="#6b7280" font-family="Arial, sans-serif" font-size="14">Outcome Visualization</text>
             <text x="200" y="240" text-anchor="middle" fill="#9ca3af" font-family="Arial, sans-serif" font-size="12">[Image Placeholder]</text>
-            <text x="200" y="260" text-anchor="middle" fill="#9ca3af" font-family="Arial, sans-serif" font-size="10">400×300 Image</text>
+            <text x="200" y="260" text-anchor="middle" fill="#9ca3af" font-family="Arial, sans-serif" font-size="10">400×300 JPEG</text>
           </svg>
         </div>
       </div>
@@ -399,6 +399,7 @@ function initPhase3() {
   
   // Show results button after rolling
   const rollBtn = document.getElementById('rollBtn');
+  const originalRollHandler = rollBtn.onclick;
   
   rollBtn.addEventListener('click', () => {
     setTimeout(() => {
@@ -443,8 +444,7 @@ function initPhase4() {
   });
 }
 
-// Updated Phase 4 functions with image integration
-function updateFinalResults() {
+// REPLACED: function updateFinalResults() {
   // Update difficulty display
   const difficultyNames = {
     optimist: 'Optimist Mode (95°)',
@@ -462,20 +462,11 @@ function updateFinalResults() {
   };
   document.getElementById('selectedResources').textContent = resourceNames[gameState.resources];
   
-  // Copy results from main game and update outcome image
+  // Copy results from main game
   const resultCard = document.getElementById('resultCard');
   const finalResultContent = document.getElementById('finalResultContent');
-  const imageContainer = document.querySelector('.results-image-placeholder');
-  
   if (resultCard && !resultCard.classList.contains('muted')) {
     finalResultContent.innerHTML = resultCard.innerHTML;
-    
-    // Extract outcome category from the result to determine image
-    const badgeSpan = resultCard.querySelector('.badge');
-    if (badgeSpan) {
-      const category = badgeSpan.textContent.trim();
-      updateOutcomeImage(category, imageContainer);
-    }
   }
   
   // Copy Monte Carlo results if available
@@ -501,32 +492,7 @@ function updateFinalResults() {
   }
 }
 
-function updateOutcomeImage(category, container) {
-  // Map outcome categories to image files
-  const imageMap = {
-    'Spectacular success': 'spectacular_success.png',
-    'Mild success': 'mild_success.png', 
-    'Mild failure': 'mild_failure.png',
-    'Spectacular failure': 'spectacular_failure.png'
-  };
-  
-  const imagePath = imageMap[category];
-  if (imagePath && container) {
-    // Replace the SVG placeholder with the actual image
-    container.innerHTML = `
-      <img src="${imagePath}" 
-           alt="${category} outcome" 
-           style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);"
-           onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-      <div style="display: none; text-align: center; color: #6b7280; font-style: italic; padding: 2rem;">
-        <h4>${category}</h4>
-        <p>Image: ${imagePath}</p>
-        <small>Image failed to load</small>
-      </div>
-    `;
-  }
-}
-
+// Updated Phase 4 functions with image integrationfunction updateFinalResults() {  // Update difficulty display  const difficultyNames = {    optimist: 'Optimist Mode (95°)',    realist: 'Realist Mode (70°)',    pessimist: 'Pessimist Mode (35°)',    yudkowskyite: 'Yudkowskyite Mode (5°)'  };  document.getElementById('selectedDifficulty').textContent = difficultyNames[gameState.difficulty];    // Update resources display  const resourceNames = {    easy: 'High Commitment ($400B, 40 PC)',    medium: 'Moderate Commitment ($240B, 24 PC)',    hard: 'Low Commitment ($160B, 16 PC)'  };  document.getElementById('selectedResources').textContent = resourceNames[gameState.resources];    // Copy results from main game and update outcome image  const resultCard = document.getElementById('resultCard');  const finalResultContent = document.getElementById('finalResultContent');  const imageContainer = document.querySelector('.results-image-placeholder');    if (resultCard && !resultCard.classList.contains('muted')) {    finalResultContent.innerHTML = resultCard.innerHTML;        // Extract outcome category from the result to determine image    const badgeSpan = resultCard.querySelector('.badge');    if (badgeSpan) {      const category = badgeSpan.textContent.trim();      updateOutcomeImage(category, imageContainer);    }  }    // Copy Monte Carlo results if available  const mcCard = document.getElementById('mcCard');  const finalMcCard = document.getElementById('finalMcCard');  if (mcCard && !mcCard.classList.contains('hidden')) {    finalMcCard.classList.remove('hidden');    const finalMcChart = document.getElementById('finalMcChart');    const originalChart = document.getElementById('mcChart');    const finalSummary = document.getElementById('finalMcSummary');    const originalSummary = document.getElementById('mcSummary');        // Copy canvas content    if (originalChart && finalMcChart) {      const ctx = finalMcChart.getContext('2d');      ctx.drawImage(originalChart, 0, 0, finalMcChart.width, finalMcChart.height);    }        // Copy summary    if (originalSummary && finalSummary) {      finalSummary.innerHTML = originalSummary.innerHTML;    }  }}function updateOutcomeImage(category, container) {  // Map outcome categories to image files  const imageMap = {    'Spectacular success': 'spectacular_success.png',    'Mild success': 'mild_success.png',    'Mild failure': 'mild_failure.png',    'Spectacular failure': 'spectacular_failure.png'  };    const imagePath = imageMap[category];  if (imagePath && container) {    // Replace the SVG placeholder with the actual image    container.innerHTML = `      <img src="${imagePath}"           alt="${category} outcome"           style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);"           onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">      <div style="display: none; text-align: center; color: #6b7280; font-style: italic;">        ${category}<br>        <small>Image: ${imagePath}</small>      </div>    `;  }}
 // Initialize phases when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
   initPhase1();
