@@ -1,6 +1,6 @@
 # AI Governance Strategy Tool v4
 
-An interactive web application for exploring AI governance options, policies, and their potential outcomes. This tool integrates comprehensive research data from academic literature, policy proposals, and real-world implementations.
+An interactive, slightly gamified web application for exploring AI governance options, policies, and their potential outcomes. This tool integrates comprehensive research data from academic literature, policy proposals, and real-world implementations.
 
 ## Features
 
