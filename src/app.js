@@ -166,17 +166,28 @@ function renderList(el, items, type){
 }
 // Initialize everything when DOM is ready
 function initializeApp() {
-  // Initialize lists
-  renderList($('#postures'), CATALOGUE.postures, 'postures');
-  renderList($('#institutions'), CATALOGUE.institutions, 'institutions');
-  renderList($('#mechanisms'), CATALOGUE.mechanisms, 'mechanisms');
-  renderList($('#controls'), CATALOGUE.controls, 'controls');
-  
-  // Initialize event listeners
+  // Initialize event listeners first
   initializeEventListeners();
   
-  // Set initial mode and sync build
+  // Set initial mode
   setMode('medium');
+  
+  // Lists will be initialized when phase 3 is shown
+}
+
+function initializeLists() {
+  // Initialize lists - these will be available when phase 3 is shown
+  const posturesEl = $('#postures');
+  const institutionsEl = $('#institutions');
+  const mechanismsEl = $('#mechanisms');
+  const controlsEl = $('#controls');
+  
+  if (posturesEl) renderList(posturesEl, CATALOGUE.postures, 'postures');
+  if (institutionsEl) renderList(institutionsEl, CATALOGUE.institutions, 'institutions');
+  if (mechanismsEl) renderList(mechanismsEl, CATALOGUE.mechanisms, 'mechanisms');
+  if (controlsEl) renderList(controlsEl, CATALOGUE.controls, 'controls');
+  
+  // Sync build after lists are populated
   syncBuild();
 }
 
