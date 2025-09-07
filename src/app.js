@@ -164,19 +164,91 @@ function renderList(el, items, type){
     el.appendChild(wrap);
   });
 }
-// Initialize lists when DOM is ready
-function initializeLists() {
+// Initialize everything when DOM is ready
+function initializeApp() {
+  // Initialize lists
   renderList($('#postures'), CATALOGUE.postures, 'postures');
   renderList($('#institutions'), CATALOGUE.institutions, 'institutions');
   renderList($('#mechanisms'), CATALOGUE.mechanisms, 'mechanisms');
   renderList($('#controls'), CATALOGUE.controls, 'controls');
+  
+  // Initialize event listeners
+  initializeEventListeners();
+  
+  // Set initial mode and sync build
+  setMode('medium');
+  syncBuild();
+}
+
+function initializeEventListeners() {
+  // Mode selection listeners
+  document.querySelectorAll('input[name=mode]').forEach(r=> r.addEventListener('change', ()=> setMode(r.value)));
+  
+  // Build sync listener
+  document.body.addEventListener('change', syncBuild);
+  
+  // Lock/Confirm button
+  $('#lockBtn').addEventListener('click', ()=>{
+    locked = true;
+    document.querySelectorAll('input').forEach(i=> i.disabled = true);
+    $('#rollBtn').disabled = false;
+    const card = $('#resultCard');
+    card.classList.remove('muted');
+    card.innerHTML = `<h3>Locked</h3><p>Selections frozen. Roll for outcome.</p>`;
+  });
+  
+  // Reset button  
+  $('#resetBtn').addEventListener('click', ()=>{
+    // Reset all selections
+    document.querySelectorAll('input[type=checkbox], input[name=posture]').forEach(i => i.checked = false);
+    
+    // Unlock everything
+    locked = false;
+    document.querySelectorAll('input').forEach(i => i.disabled = false);
+    
+    // Reset buttons
+    $('#rollBtn').disabled = true;
+    
+    // Clear results
+    const card = $('#resultCard');
+    card.classList.add('muted');
+    card.innerHTML = '<h3>Outcome</h3><p>Choose, Lock In, then roll.</p>';
+    
+    // Clear Monte Carlo results
+    const mcCard = $('#mcCard');
+    mcCard.classList.add('hidden');
+    
+    // Sync the build to update display
+    syncBuild();
+  });
+  
+  // Roll button
+  $('#rollBtn').addEventListener('click', ()=>{
+    const result = evaluateOnce();
+    if(!result) return;
+    const card = $('#resultCard');
+    const cat = (result.score >= 0.70) ? 'success' : (result.score >= 0.45) ? 'mildsuccess' : (result.score >= 0.20) ? 'mildfail' : 'fail';
+    const lab = (result.score >= 0.70) ? 'Spectacular success' : (result.score >= 0.45) ? 'Mild success' : (result.score >= 0.20) ? 'Mild failure' : 'Spectacular failure';
+    
+    card.innerHTML = `<h3>Outcome</h3>
+    <p><span class="badge ${cat}">${lab}</span></p>
+    <p>Final score: <b>${result.score.toFixed(2)}</b> (${(result.score*100).toFixed(0)}%)</p>
+    <p class="meta">Posture: ${result.posture} | Institutions: ${result.insts.length} | Mechanisms: ${result.mechs.length} | Controls: ${result.ctrls.length}</p>`;
+  });
+  
+  // Other event listeners
+  const difficultyMode = document.getElementById('difficultyMode');
+  if (difficultyMode) {
+    difficultyMode.addEventListener('change', updateTempFromDifficulty);
+    updateTempFromDifficulty();
+  }
 }
 
 // Call initialization after DOM is loaded
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initializeLists);
+  document.addEventListener('DOMContentLoaded', initializeApp);
 } else {
-  initializeLists();
+  initializeApp();
 }
 
 let mode = 'medium';
@@ -197,8 +269,7 @@ function setMode(m){
   document.querySelectorAll('input').forEach(i=> i.disabled=false);
   syncBuild();
 }
-document.querySelectorAll('input[name=mode]').forEach(r=> r.addEventListener('change', ()=> setMode(r.value)));
-setMode('medium');
+// Mode initialization moved to initializeApp function
 
 function getCost(id){
   for(const cat of ['institutions','mechanisms','controls']){
@@ -267,41 +338,7 @@ function syncBuild(){
   enforceAffordability();
   $('#lockBtn').disabled = !posture;
 }
-document.body.addEventListener('change', syncBuild);
-
-$('#lockBtn').addEventListener('click', ()=>{
-  locked = true;
-  document.querySelectorAll('input').forEach(i=> i.disabled = true);
-  $('#rollBtn').disabled = false;
-  $('#mcBtn').disabled = false;
-  const card = $('#resultCard');
-  card.classList.remove('muted');
-  card.innerHTML = `<h3>Locked</h3><p>Selections frozen. Roll for outcome, or run Monte Carlo.</p>`;
-});
-
-$('#resetBtn').addEventListener('click', ()=>{
-  // Reset all selections
-  document.querySelectorAll('input[type=checkbox], input[name=posture]').forEach(i => i.checked = false);
-  
-  // Unlock everything
-  locked = false;
-  document.querySelectorAll('input').forEach(i => i.disabled = false);
-  
-  // Reset buttons
-  $('#rollBtn').disabled = true;
-  $('#mcBtn').disabled = true;
-  
-  // Clear results
-  const card = $('#resultCard');
-  card.classList.add('muted');
-  card.innerHTML = '<h3>Outcome</h3><p>Choose, Lock In, then roll. Temperature and coherence matter; low temperatures make failure commonplace.</p>';
-  
-  // Hide Monte Carlo results
-  $('#mcCard').classList.add('hidden');
-  
-  // Refresh the build display
-  syncBuild();
-});
+// Event listeners moved to initializeEventListeners function
 
 function evaluateOnce(rng=Math.random){
   const {posture, insts, mechs, ctrls} = currentSelections();
@@ -431,17 +468,10 @@ function drawBars(ctx, counts){
   });
 }
 
-$('#rollBtn').addEventListener('click', ()=>{
-  const res = evaluateOnce();
-  if(!res) return;
-  const card = $('#resultCard');
-  card.classList.remove('muted');
-  card.innerHTML = `<h3>Outcome <span class="badge ${res.badgeClass}">${res.category}</span></h3>
-    <p>${res.narrative}</p>
-    <p class="meta">Model: prob = clamp((0.03 + 0.38·score + 0.18·T + noise) × headwind[T<0.2]); noise ±0.15.</p>`;
-});
+// Removed duplicate event listener - moved to initializeEventListeners
 
-$('#mcBtn').addEventListener('click', ()=>{
+// Monte Carlo functionality (if needed)
+function runMonteCarlo() {
   const N = 1000, counts=[0,0,0,0];
   for(let i=0;i<N;i++){
     const res = evaluateOnce(Math.random);
@@ -474,6 +504,4 @@ function updateTempFromDifficulty(){
   document.getElementById('tempVal').textContent = (tempValue/100).toFixed(2);
 }
 
-document.getElementById('difficultyMode').addEventListener('change', updateTempFromDifficulty);
-updateTempFromDifficulty();
-syncBuild();
+// Initialization moved to initializeApp function
