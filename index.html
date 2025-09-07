@@ -3,556 +3,127 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AI Governance Strategy — v4</title>
-  <link rel="stylesheet" href="src/styles.css?v=3">
+  <title>AI Governance Strategy Builder</title>
+  <link rel="stylesheet" href="src/styles.css?v=4">
 </head>
 <body>
+
 <header>
   <div class="brand">
-    <h1>AI Governance Strategy — v4</h1>
-    <div id="phase-indicator">
-      <span class="phase-step active" data-phase="1">1</span>
-      <span class="phase-step" data-phase="2">2</span>
-      <span class="phase-step" data-phase="3">3</span>
-      <span class="phase-step" data-phase="4">4</span>
+    <h1>AI Governance Strategy Builder</h1>
+    <div class="progress-bar">
+      <div class="progress-step active" data-step="1">1. Strategic Posture</div>
+      <div class="progress-step" data-step="2">2. Institutions</div>
+      <div class="progress-step" data-step="3">3. Regulations</div>
+      <div class="progress-step" data-step="4">4. Technical Controls</div>
     </div>
   </div>
 </header>
 
-<!-- PHASE 1: Difficulty Selection with Integrated Narratives -->
-<main id="phase1" class="phase active">
-  <section class="difficulty-selection-main card">
-    <div class="intro-text">
-      <h2>The AI Supremacy Race</h2>
-      <p>The earth has entered a race for AI supremacy. You are tasked to allocate global resources to ensure that humans emerge safely from this situation. You will pick what global posture to take, which mechanisms we need to implement this.</p>
-      <p><strong>First, which world are we in?</strong></p>
-    </div>
-    
-    <div class="difficulty-grid">
-      <label class="difficulty-option">
-        <input type="radio" name="difficultyLevel" value="optimist">
-        <div class="difficulty-card">
-          <h4>Optimist Mode (95°)</h4>
-          <div class="difficulty-narrative">
-            <p>We live in the <strong>optimistic world</strong> where AI safety is manageable. With proper coordination and reasonable precautions, we can navigate this transition successfully. Multiple approaches can work, and humanity has broad margin for error.</p>
-            <p class="difficulty-desc">Generous success probabilities • High resilience to mistakes</p>
-          </div>
-        </div>
-      </label>
-      
-      <label class="difficulty-option">
-        <input type="radio" name="difficultyLevel" value="realist" checked>
-        <div class="difficulty-card">
-          <h4>Realist Mode (70°)</h4>
-          <div class="difficulty-narrative">
-            <p>We face a <strong>challenging but manageable</strong> path. AI safety requires serious effort and coordination, but multiple strategies could succeed if executed well. Some mistakes are tolerable, but vigilance is essential.</p>
-            <p class="difficulty-desc">Balanced expectations • Moderate resilience</p>
-          </div>
-        </div>
-      </label>
-      
-      <label class="difficulty-option">
-        <input type="radio" name="difficultyLevel" value="pessimist">
-        <div class="difficulty-card">
-          <h4>Pessimist Mode (35°)</h4>
-          <div class="difficulty-narrative">
-            <p>We live in a <strong>precarious world</strong> where AI development is fraught with dangers. Only careful, well-executed strategies have a chance of success. Most approaches will fail without exceptional coordination and foresight.</p>
-            <p class="difficulty-desc">Conservative success rates • Low error tolerance</p>
-          </div>
-        </div>
-      </label>
-      
-      <label class="difficulty-option">
-        <input type="radio" name="difficultyLevel" value="yudkowskyite">
-        <div class="difficulty-card">
-          <h4>Yudkowskyite Mode (5°)</h4>
-          <div class="difficulty-narrative">
-            <p>We live in the <strong>Yudkowskyian world</strong> where AI alignment is extraordinarily difficult. There is only a narrow path that can lead us to existential safety. Most strategies lead to failure, and humanity must thread the needle perfectly.</p>
-            <p class="difficulty-desc">Extremely narrow path • Almost no margin for error</p>
-          </div>
-        </div>
-      </label>
-    </div>
-    
-    <div class="phase-actions">
-      <button id="proceedToPhase2" class="primary-btn">Continue to Resource Allocation →</button>
+<main id="app">
+
+  <!-- PAGE 1: Strategic Postures -->
+  <section id="page1" class="page active">
+    <div class="page-content">
+      <div class="narrative">
+        <h2>Choose Your Strategic Approach</h2>
+        <p>The world stands at a crossroads in AI development. How humanity navigates the transition to artificial general intelligence will determine our future survival and flourishing.</p>
+        <p>As the architect of global AI governance strategy, you must first choose the fundamental approach that will guide all other decisions.</p>
+        <p><strong>Select the strategic posture that best represents your vision for managing AI risks:</strong></p>
+      </div>
+
+      <div class="options-grid" id="postures-grid">
+        <!-- Options will be populated by JavaScript -->
+      </div>
+
+      <div class="page-actions">
+        <button id="next-to-page2" class="btn-primary" disabled>Continue to Institutional Design →</button>
+      </div>
     </div>
   </section>
+
+  <!-- PAGE 2: Institutional Architectures -->
+  <section id="page2" class="page">
+    <div class="page-content">
+      <div class="narrative">
+        <h2>Design Institutional Architecture</h2>
+        <p>With your strategic approach defined, you must now build the institutional framework to implement it.</p>
+        <p>These organizations, governance bodies, and coordination mechanisms will be the backbone of your AI safety system.</p>
+        <p><strong>Select the institutional architectures you want to establish:</strong></p>
+      </div>
+
+      <div class="options-grid" id="institutions-grid">
+        <!-- Options will be populated by JavaScript -->
+      </div>
+
+      <div class="page-actions">
+        <button id="back-to-page1" class="btn-secondary">← Back to Strategic Posture</button>
+        <button id="next-to-page3" class="btn-primary">Continue to Legal Framework →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE 3: Regulatory/Legal Mechanisms -->
+  <section id="page3" class="page">
+    <div class="page-content">
+      <div class="narrative">
+        <h2>Establish Legal & Regulatory Framework</h2>
+        <p>Your institutions need teeth. Legal mechanisms, compliance frameworks, and regulatory tools will enforce your governance vision.</p>
+        <p>These are the rules of the game that will shape how AI systems are developed, deployed, and monitored.</p>
+        <p><strong>Select the regulatory and legal mechanisms you want to implement:</strong></p>
+      </div>
+
+      <div class="options-grid" id="mechanisms-grid">
+        <!-- Options will be populated by JavaScript -->
+      </div>
+
+      <div class="page-actions">
+        <button id="back-to-page2" class="btn-secondary">← Back to Institutions</button>
+        <button id="next-to-page4" class="btn-primary">Continue to Technical Controls →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE 4: Technical & Infrastructural Controls -->
+  <section id="page4" class="page">
+    <div class="page-content">
+      <div class="narrative">
+        <h2>Implement Technical Safeguards</h2>
+        <p>Finally, you need technical controls that can directly monitor, limit, and manage AI systems at the computational level.</p>
+        <p>These tools will provide the technical enforcement mechanisms for your governance strategy.</p>
+        <p><strong>Select the technical and infrastructural controls you want to deploy:</strong></p>
+      </div>
+
+      <div class="options-grid" id="controls-grid">
+        <!-- Options will be populated by JavaScript -->
+      </div>
+
+      <div class="page-actions">
+        <button id="back-to-page3" class="btn-secondary">← Back to Legal Framework</button>
+        <button id="complete-strategy" class="btn-primary">Complete Strategy & View Results →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTS PAGE -->
+  <section id="results-page" class="page">
+    <div class="page-content">
+      <h2>Your AI Governance Strategy</h2>
+      <div id="strategy-summary">
+        <!-- Strategy summary will be populated by JavaScript -->
+      </div>
+      <div id="outcome-section">
+        <!-- Outcome evaluation will be populated by JavaScript -->
+      </div>
+      <div class="page-actions">
+        <button id="start-over" class="btn-primary">Create New Strategy</button>
+      </div>
+    </div>
+  </section>
+
 </main>
 
-<!-- PHASE 2: Resource Allocation with Narrative -->
-<main id="phase2" class="phase">
-  <section class="resource-narrative card">
-    <h2>Mobilizing Global Resources</h2>
-    <div class="narrative-content">
-      <p>The stakes couldn't be higher. World leaders have acknowledged the existential importance of getting AI governance right, but the political reality is complex.</p>
-      
-      <p>Your governments have rallied together, but the level of commitment varies dramatically based on public awareness, political will, and competing priorities like climate change, economic inequality, and geopolitical tensions.</p>
-      
-      <p><strong>How much support have you secured for this critical mission?</strong></p>
-    </div>
-    
-    <div class="resource-options">
-      <label class="resource-option">
-        <input type="radio" name="mode" value="easy">
-        <div class="resource-card">
-          <h4>High Commitment Scenario</h4>
-          <div class="resource-details">
-            <p><strong>$400B Budget • 40 Political Capital</strong></p>
-            <p>Major powers have recognized AI as the defining challenge of our time. Unprecedented international cooperation has emerged, similar to wartime mobilization. Public support is strong across democracies.</p>
-          </div>
-        </div>
-      </label>
-      
-      <label class="resource-option">
-        <input type="radio" name="mode" value="medium" checked>
-        <div class="resource-card">
-          <h4>Moderate Commitment Scenario</h4>
-          <div class="resource-details">
-            <p><strong>$240B Budget • 24 Political Capital</strong></p>
-            <p>Some countries are taking AI governance seriously, but progress is hampered by competing priorities and disagreements. International cooperation exists but is fragmented and inconsistent.</p>
-          </div>
-        </div>
-      </label>
-      
-      <label class="resource-option">
-        <input type="radio" name="mode" value="hard">
-        <div class="resource-card">
-          <h4>Low Commitment Scenario</h4>
-          <div class="resource-details">
-            <p><strong>$160B Budget • 16 Political Capital</strong></p>
-            <p>Most governments are distracted by short-term crises. AI safety is viewed as a luxury or future problem. You must work within severe constraints and limited international cooperation.</p>
-          </div>
-        </div>
-      </label>
-    </div>
-    
-    <div class="current-allocation">
-      <div class="budget-display">
-        <span>Available Budget: <b>$<span id="moneyLeft">240</span>B</b></span>
-        <span>Political Capital: <b><span id="pcLeft">24</span> PC</b></span>
-      </div>
-    </div>
-    
-    <div class="phase-actions">
-      <button id="proceedToPhase3" class="primary-btn">Continue to Strategy Selection →</button>
-    </div>
-  </section>
-</main>
+<script src="src/app.js?v=12"></script>
 
-<!-- PHASE 3: Strategy & Governance Selection (Original Game) -->
-<main id="phase3" class="phase">
-  <section class="intro card">
-    <p><b>Strategic Implementation:</b> Now comes the critical phase. You have your budget and political capital. Pick <i>one</i> strategic posture (free), then purchase institutions, laws, and technical controls within your constraints. Some choices require others; some complement or clash. When ready, <b>Lock In</b>, then roll the outcome.</p>
-    
-    <div class="search-container">
-      <input type="text" id="searchInput" class="search-input" placeholder="Search governance options..." aria-label="Search governance options">
-    </div>
-  </section>
-
-  <section class="palette">
-    <div class="col">
-      <h2>1) Strategic postures (pick one)</h2>
-      <div id="postures" class="list"></div>
-    </div>
-    <div class="col">
-      <h2>2) Institutional architectures</h2>
-      <div id="institutions" class="list"></div>
-    </div>
-    <div class="col">
-      <h2>3) Regulatory / legal mechanisms</h2>
-      <div id="mechanisms" class="list"></div>
-    </div>
-    <div class="col">
-      <h2>4) Technical & infrastructural controls</h2>
-      <div id="controls" class="list"></div>
-    </div>
-  </section>
-
-  <section class="build">
-    <h2>Your build</h2>
-    <div class="grid">
-      <div>
-        <h3>Posture</h3>
-        <div id="picked-posture" class="picked"></div>
-      </div>
-      <div>
-        <h3>Institutions</h3>
-        <div id="picked-institutions" class="picked"></div>
-      </div>
-      <div>
-        <h3>Laws & regulatory</h3>
-        <div id="picked-mechanisms" class="picked"></div>
-      </div>
-      <div>
-        <h3>Technical controls</h3>
-        <div id="picked-controls" class="picked"></div>
-      </div>
-    </div>
-
-    <div class="actions actions-topline">
-      <span class="hint">Select within budget. Requirements & synergies apply.</span>
-    </div>
-    <div class="actions">
-      <button id="lockBtn">Confirm Selection</button>
-      <button id="resetBtn">Reset</button>
-    </div>
-    <div class="actions">
-      <button id="rollBtn" disabled>Roll outcome</button>
-    </div>
-    
-    <div class="phase-actions">
-      <button id="proceedToPhase4" class="primary-btn" style="display: none;">View Final Results →</button>
-    </div>
-  </section>
-</main>
-
-<!-- PHASE 4: Final Results -->
-<main id="phase4" class="phase">
-  <section class="final-results card">
-    <h2>Mission Outcome</h2>
-    
-    <div class="results-layout">
-      <div class="results-visual">
-        <div class="results-image-placeholder">
-          <svg width="400" height="300" viewBox="0 0 400 300" style="background: #f3f4f6; border: 2px dashed #d1d5db; border-radius: 8px;">
-            <rect width="400" height="300" fill="#f9fafb"/>
-            <circle cx="200" cy="100" r="30" fill="#e5e7eb"/>
-            <rect x="160" y="140" width="80" height="60" rx="4" fill="#e5e7eb"/>
-            <text x="200" y="220" text-anchor="middle" fill="#6b7280" font-family="Arial, sans-serif" font-size="14">Outcome Visualization</text>
-            <text x="200" y="240" text-anchor="middle" fill="#9ca3af" font-family="Arial, sans-serif" font-size="12">[Image Placeholder]</text>
-            <text x="200" y="260" text-anchor="middle" fill="#9ca3af" font-family="Arial, sans-serif" font-size="10">400×300 Image</text>
-          </svg>
-        </div>
-      </div>
-      
-      <div class="results-content">
-        <div id="finalResultCard" class="result-summary">
-          <h3>Your Strategy's Impact</h3>
-          <div id="finalResultContent">
-            <p>Complete your strategy selection and roll the outcome to see your results here.</p>
-          </div>
-        </div>
-        
-        <div id="finalMcCard" class="mc-results hidden">
-          <h3>Statistical Analysis</h3>
-          <canvas id="finalMcChart" width="400" height="200"></canvas>
-          <p id="finalMcSummary" class="small"></p>
-        </div>
-        
-        <div class="strategy-summary">
-          <h4>Your Selected Strategy</h4>
-          <div id="strategySummary">
-            <div class="summary-section">
-              <strong>Difficulty:</strong> <span id="selectedDifficulty">-</span>
-            </div>
-            <div class="summary-section">  
-              <strong>Resources:</strong> <span id="selectedResources">-</span>
-            </div>
-            <div class="summary-section">
-              <strong>Posture:</strong> <span id="selectedPosture">-</span>
-            </div>
-            <div class="summary-section">
-              <strong>Total Investment:</strong> $<span id="totalSpent">0</span>B, <span id="totalPcSpent">0</span> PC
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="phase-actions">
-      <button id="playAgainBtn" class="primary-btn">Play Again</button>
-      <button id="exportFinalBtn" class="secondary-btn">Export Results</button>
-    </div>
-  </section>
-</main>
-
-<!-- Legacy elements for compatibility -->
-<div class="results" style="display: none;">
-  <div id="resultCard" class="card muted">
-    <h3>Outcome</h3>
-    <p>Choose, Lock In, then roll. Temperature and coherence matter; low temperatures make failure commonplace.</p>
-  </div>
-  <div id="mcCard" class="card hidden">
-    <h3>Monte Carlo</h3>
-    <canvas id="mcChart" width="640" height="220"></canvas>
-    <p id="mcSummary" class="small"></p>
-  </div>
-</div>
-
-<div id="tooltip" class="tooltip" role="tooltip"></div>
-
-<!-- Legacy temp display for compatibility -->
-<div id="temp-display" style="display: none;">
-  <span id="tempVal">0.50</span>
-  <select id="difficultyMode">
-    <option value="optimist">Optimist (95°)</option>
-    <option value="realist" selected>Realist (70°)</option>
-    <option value="pessimist">Pessimist (35°)</option>
-    <option value="yudkowskyite">Yudkowskyite (5°)</option>
-  </select>
-</div>
-
-<footer>
-  <span>v4 — budgets + costs + compatibility. No LLMs. Still a toy.</span>
-</footer>
-
-<script src="src/app.js?v=11"></script>
-<script>
-// Phase Management System
-let currentPhase = 1;
-let gameState = {
-  difficulty: 'realist',
-  resources: 'medium',
-  posture: null,
-  totalSpent: 0,
-  totalPcSpent: 0
-};
-
-// Phase navigation functions
-function showPhase(phaseNumber) {
-  // Hide all phases
-  document.querySelectorAll('.phase').forEach(phase => {
-    phase.classList.remove('active');
-  });
-  
-  // Show target phase
-  document.getElementById(`phase${phaseNumber}`).classList.add('active');
-  
-  // Update phase indicator
-  document.querySelectorAll('.phase-step').forEach((step, index) => {
-    step.classList.toggle('active', index + 1 <= phaseNumber);
-    step.classList.toggle('completed', index + 1 < phaseNumber);
-  });
-  
-  currentPhase = phaseNumber;
-  
-  // Initialize lists when showing phase 3 (strategy selection)
-  if (phaseNumber === 3) {
-    // Make sure lists are populated
-    setTimeout(() => {
-      if (typeof window.initializeLists === 'function') {
-        window.initializeLists();
-        console.log('Phase 3 activated - lists should be populated now');
-      } else {
-        console.error('initializeLists function not found');
-      }
-    }, 100);
-  }
-  
-  // Update game state display in Phase 4
-  if (phaseNumber === 4) {
-    updateFinalResults();
-  }
-}
-
-// Phase 1 logic
-function initPhase1() {
-  const difficultyInputs = document.querySelectorAll('input[name="difficultyLevel"]');
-  const proceedBtn = document.getElementById('proceedToPhase2');
-  
-  difficultyInputs.forEach(input => {
-    input.addEventListener('change', () => {
-      gameState.difficulty = input.value;
-      // Update the legacy difficulty mode selector for compatibility
-      const difficultyMode = document.getElementById('difficultyMode');
-      if (difficultyMode) {
-        difficultyMode.value = input.value;
-        difficultyMode.dispatchEvent(new Event('change'));
-      }
-    });
-  });
-  
-  proceedBtn.addEventListener('click', () => {
-    showPhase(2);
-  });
-}
-
-// Phase 2 logic  
-function initPhase2() {
-  const resourceInputs = document.querySelectorAll('input[name="mode"]');
-  const proceedBtn = document.getElementById('proceedToPhase3');
-  const moneyDisplay = document.getElementById('moneyLeft');
-  const pcDisplay = document.getElementById('pcLeft');
-  
-  function updateResourceDisplay() {
-    const selected = document.querySelector('input[name="mode"]:checked');
-    if (selected) {
-      gameState.resources = selected.value;
-      let money, pc;
-      switch(selected.value) {
-        case 'easy': money = 400; pc = 40; break;
-        case 'medium': money = 240; pc = 24; break;
-        case 'hard': money = 160; pc = 16; break;
-      }
-      moneyDisplay.textContent = money;
-      pcDisplay.textContent = pc;
-    }
-  }
-  
-  resourceInputs.forEach(input => {
-    input.addEventListener('change', updateResourceDisplay);
-  });
-  
-  proceedBtn.addEventListener('click', () => {
-    showPhase(3);
-  });
-  
-  // Initial update
-  updateResourceDisplay();
-}
-
-// Phase 3 logic
-function initPhase3() {
-  const proceedBtn = document.getElementById('proceedToPhase4');
-  
-  // Show results button after rolling
-  const rollBtn = document.getElementById('rollBtn');
-  
-  rollBtn.addEventListener('click', () => {
-    setTimeout(() => {
-      proceedBtn.style.display = 'inline-block';
-    }, 1000);
-  });
-  
-  proceedBtn.addEventListener('click', () => {
-    showPhase(4);
-  });
-}
-
-// Phase 4 logic
-function initPhase4() {
-  const playAgainBtn = document.getElementById('playAgainBtn');
-  const exportBtn = document.getElementById('exportFinalBtn');
-  
-  playAgainBtn.addEventListener('click', () => {
-    // Reset game state
-    gameState = {
-      difficulty: 'realist',
-      resources: 'medium', 
-      posture: null,
-      totalSpent: 0,
-      totalPcSpent: 0
-    };
-    
-    // Reset form selections
-    document.querySelector('input[name="difficultyLevel"][value="realist"]').checked = true;
-    document.querySelector('input[name="mode"][value="medium"]').checked = true;
-    
-    // Go back to phase 1
-    showPhase(1);
-  });
-  
-  exportBtn.addEventListener('click', () => {
-    // Use existing export functionality
-    const exportBtnOriginal = document.getElementById('exportBtn');
-    if (exportBtnOriginal) {
-      exportBtnOriginal.click();
-    }
-  });
-}
-
-// Updated Phase 4 functions with image integration
-function updateFinalResults() {
-  // Update difficulty display
-  const difficultyNames = {
-    optimist: 'Optimist Mode (95°)',
-    realist: 'Realist Mode (70°)', 
-    pessimist: 'Pessimist Mode (35°)',
-    yudkowskyite: 'Yudkowskyite Mode (5°)'
-  };
-  document.getElementById('selectedDifficulty').textContent = difficultyNames[gameState.difficulty];
-  
-  // Update resources display
-  const resourceNames = {
-    easy: 'High Commitment ($400B, 40 PC)',
-    medium: 'Moderate Commitment ($240B, 24 PC)',
-    hard: 'Low Commitment ($160B, 16 PC)'
-  };
-  document.getElementById('selectedResources').textContent = resourceNames[gameState.resources];
-  
-  // Copy results from main game and update outcome image
-  const resultCard = document.getElementById('resultCard');
-  const finalResultContent = document.getElementById('finalResultContent');
-  const imageContainer = document.querySelector('.results-image-placeholder');
-  
-  if (resultCard && !resultCard.classList.contains('muted')) {
-    finalResultContent.innerHTML = resultCard.innerHTML;
-    
-    // Extract outcome category from the result to determine image
-    const badgeSpan = resultCard.querySelector('.badge');
-    if (badgeSpan) {
-      const category = badgeSpan.textContent.trim();
-      updateOutcomeImage(category, imageContainer);
-    }
-  }
-  
-  // Copy Monte Carlo results if available
-  const mcCard = document.getElementById('mcCard');
-  const finalMcCard = document.getElementById('finalMcCard');
-  if (mcCard && !mcCard.classList.contains('hidden')) {
-    finalMcCard.classList.remove('hidden');
-    const finalMcChart = document.getElementById('finalMcChart');
-    const originalChart = document.getElementById('mcChart');
-    const finalSummary = document.getElementById('finalMcSummary');
-    const originalSummary = document.getElementById('mcSummary');
-    
-    // Copy canvas content
-    if (originalChart && finalMcChart) {
-      const ctx = finalMcChart.getContext('2d');
-      ctx.drawImage(originalChart, 0, 0, finalMcChart.width, finalMcChart.height);
-    }
-    
-    // Copy summary
-    if (originalSummary && finalSummary) {
-      finalSummary.innerHTML = originalSummary.innerHTML;
-    }
-  }
-}
-
-function updateOutcomeImage(category, container) {
-  // Map outcome categories to image files
-  const imageMap = {
-    'Spectacular success': 'spectacular_success.jpg',
-    'Mild success': 'mild_success.jpg', 
-    'Mild failure': 'mild_failure.jpg',
-    'Spectacular failure': 'spectacular_failure.jpg'
-  };
-  
-  const imagePath = imageMap[category];
-  if (imagePath && container) {
-    // Replace the SVG placeholder with the actual image
-    container.innerHTML = `
-      <img src="${imagePath}" 
-           alt="${category} outcome" 
-           style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);"
-           onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-      <div style="display: none; text-align: center; color: #6b7280; font-style: italic; padding: 2rem;">
-        <h4>${category}</h4>
-        <p>Image: ${imagePath}</p>
-        <small>Image failed to load</small>
-      </div>
-    `;
-  }
-}
-
-// Initialize phases when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-  initPhase1();
-  initPhase2(); 
-  initPhase3();
-  initPhase4();
-  
-  // Initialize lists after external script has loaded
-  setTimeout(() => {
-    if (typeof window.initializeLists === 'function') {
-      window.initializeLists();
-    }
-  }, 500);
-  
-  // Start with phase 1
-  showPhase(1);
-});
-</script>
 </body>
 </html>
