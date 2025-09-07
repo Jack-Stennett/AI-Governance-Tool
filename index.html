@@ -297,7 +297,7 @@
   <span>v4 — budgets + costs + compatibility. No LLMs. Still a toy.</span>
 </footer>
 
-<script src="src/app.js?v=10"></script>
+<script src="src/app.js?v=11"></script>
 <script>
 // Phase Management System
 let currentPhase = 1;
@@ -331,8 +331,12 @@ function showPhase(phaseNumber) {
   if (phaseNumber === 3) {
     // Make sure lists are populated
     setTimeout(() => {
-      initializeLists();
-      console.log('Phase 3 activated - lists should be populated now');
+      if (typeof window.initializeLists === 'function') {
+        window.initializeLists();
+        console.log('Phase 3 activated - lists should be populated now');
+      } else {
+        console.error('initializeLists function not found');
+      }
     }, 100);
   }
   
@@ -538,6 +542,13 @@ document.addEventListener('DOMContentLoaded', () => {
   initPhase2(); 
   initPhase3();
   initPhase4();
+  
+  // Initialize lists after external script has loaded
+  setTimeout(() => {
+    if (typeof window.initializeLists === 'function') {
+      window.initializeLists();
+    }
+  }, 500);
   
   // Start with phase 1
   showPhase(1);
