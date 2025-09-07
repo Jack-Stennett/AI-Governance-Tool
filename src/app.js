@@ -175,12 +175,14 @@ function renderList(el, items, type){
   
   console.log(`Finished rendering ${type}, element now has ${el.children.length} children`);
 }
-// Initialize lists when DOM is ready
-function initializeLists() {
+// Make initializeLists global so HTML can access it
+window.initializeLists = function() {
   const posturesEl = document.getElementById('postures');
   const institutionsEl = document.getElementById('institutions');
   const mechanismsEl = document.getElementById('mechanisms');
   const controlsEl = document.getElementById('controls');
+  
+  console.log('Elements found:', {postures: !!posturesEl, institutions: !!institutionsEl, mechanisms: !!mechanismsEl, controls: !!controlsEl});
   
   if (posturesEl) renderList(posturesEl, CATALOGUE.postures, 'postures');
   if (institutionsEl) renderList(institutionsEl, CATALOGUE.institutions, 'institutions');
@@ -188,16 +190,16 @@ function initializeLists() {
   if (controlsEl) renderList(controlsEl, CATALOGUE.controls, 'controls');
   
   console.log('Lists initialized:', {
-    postures: !!posturesEl && posturesEl.children.length,
-    institutions: !!institutionsEl && institutionsEl.children.length,
-    mechanisms: !!mechanismsEl && mechanismsEl.children.length,
-    controls: !!controlsEl && controlsEl.children.length
+    postures: !!posturesEl ? posturesEl.children.length : 0,
+    institutions: !!institutionsEl ? institutionsEl.children.length : 0,
+    mechanisms: !!mechanismsEl ? mechanismsEl.children.length : 0,
+    controls: !!controlsEl ? controlsEl.children.length : 0
   });
-}
+};
 
 // Try to initialize immediately and also on DOM ready
-initializeLists();
-document.addEventListener('DOMContentLoaded', initializeLists);
+window.initializeLists();
+document.addEventListener('DOMContentLoaded', window.initializeLists);
 
 let mode = 'medium';
 let budget = 0, pc = 0, locked = false;
