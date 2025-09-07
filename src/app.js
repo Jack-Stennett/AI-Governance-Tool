@@ -164,10 +164,20 @@ function renderList(el, items, type){
     el.appendChild(wrap);
   });
 }
-renderList($('#postures'), CATALOGUE.postures, 'postures');
-renderList($('#institutions'), CATALOGUE.institutions, 'institutions');
-renderList($('#mechanisms'), CATALOGUE.mechanisms, 'mechanisms');
-renderList($('#controls'), CATALOGUE.controls, 'controls');
+// Initialize lists when DOM is ready
+function initializeLists() {
+  renderList($('#postures'), CATALOGUE.postures, 'postures');
+  renderList($('#institutions'), CATALOGUE.institutions, 'institutions');
+  renderList($('#mechanisms'), CATALOGUE.mechanisms, 'mechanisms');
+  renderList($('#controls'), CATALOGUE.controls, 'controls');
+}
+
+// Call initialization after DOM is loaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeLists);
+} else {
+  initializeLists();
+}
 
 let mode = 'medium';
 let budget = 0, pc = 0, locked = false;
