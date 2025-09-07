@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AI Governance Strategy — v4</title>
-  <link rel="stylesheet" href="src/styles.css">
+  <link rel="stylesheet" href="src/styles.css?v=3">
 </head>
 <body>
 <header>
@@ -194,14 +194,11 @@
       <span class="hint">Select within budget. Requirements & synergies apply.</span>
     </div>
     <div class="actions">
-      <button id="lockBtn">Lock In</button>
-      <button id="resetBtn">Reset All</button>
-      <button id="exportBtn">Export Build</button>
+      <button id="lockBtn">Confirm Selection</button>
+      <button id="resetBtn">Reset</button>
     </div>
     <div class="actions">
       <button id="rollBtn" disabled>Roll outcome</button>
-      <button id="mcBtn" disabled>Monte Carlo × 1000</button>
-      <button id="helpBtn">Help & Guide</button>
     </div>
     
     <div class="phase-actions">
@@ -300,7 +297,7 @@
   <span>v4 — budgets + costs + compatibility. No LLMs. Still a toy.</span>
 </footer>
 
-<script src="src/app.js"></script>
+<script src="src/app.js?v=3"></script>
 <script>
 // Phase Management System
 let currentPhase = 1;
@@ -503,10 +500,10 @@ function updateFinalResults() {
 function updateOutcomeImage(category, container) {
   // Map outcome categories to image files
   const imageMap = {
-    'Spectacular success': 'spectacular_success.png',
-    'Mild success': 'mild_success.png', 
-    'Mild failure': 'mild_failure.png',
-    'Spectacular failure': 'spectacular_failure.png'
+    'Spectacular success': 'spectacular_success.jpg',
+    'Mild success': 'mild_success.jpg', 
+    'Mild failure': 'mild_failure.jpg',
+    'Spectacular failure': 'spectacular_failure.jpg'
   };
   
   const imagePath = imageMap[category];

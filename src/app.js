@@ -1,15 +1,15 @@
 // v4 — budgets, costs, requirements, complements, contradictions, harsh scoring, tooltips
 const CATALOGUE = {
   postures: [
-    {id:'laissez', label:'Laissez-faire', base:0.18, desc:'Let models proliferate, no global action.'},
-    {id:'clubs', label:'AI clubs / blocs', base:0.30, desc:'Networks among aligned countries.'},
-    {id:'ogi', label:'Open Global Investment (OGI)', base:0.33, desc:'Market mechanisms to concentrate investment.'},
-    {id:'mad', label:'MAD/MAIM', base:0.28, desc:'Deterrence-based equilibrium.'},
-    {id:'moratorium', label:'Global Moratorium', base:0.16, desc:'Halt AGI development.'},
-    {id:'cooperate', label:'Cooperative development', base:0.42, desc:'Defensive AI before offensive, by treaty.'},
-    {id:'dacc', label:'D/Acc', base:0.36, desc:'Differential acceleration of defensive capability.'},
-    {id:'nonprolif', label:'Non-proliferation', base:0.35, desc:'Stop diffusion of dangerous capabilities.'},
-    {id:'stratadv', label:'Strategic advantage', base:0.32, desc:'Ensure one actor "wins".'}
+    {id:'laissez', label:'Laissez-faire', base:0.28, desc:'Let models proliferate, no global action.'},
+    {id:'clubs', label:'AI clubs / blocs', base:0.40, desc:'Networks among aligned countries.'},
+    {id:'ogi', label:'Open Global Investment (OGI)', base:0.43, desc:'Market mechanisms to concentrate investment.'},
+    {id:'mad', label:'MAD/MAIM', base:0.38, desc:'Deterrence-based equilibrium.'},
+    {id:'moratorium', label:'Global Moratorium', base:0.26, desc:'Halt AGI development.'},
+    {id:'cooperate', label:'Cooperative development', base:0.52, desc:'Defensive AI before offensive, by treaty.'},
+    {id:'dacc', label:'D/Acc', base:0.46, desc:'Differential acceleration of defensive capability.'},
+    {id:'nonprolif', label:'Non-proliferation', base:0.45, desc:'Stop diffusion of dangerous capabilities.'},
+    {id:'stratadv', label:'Strategic advantage', base:0.42, desc:'Ensure one actor "wins".'}
   ],
   institutions: [
     {id:'self', label:'Self-governance', desc:'Firms adopt voluntary standards.'},
