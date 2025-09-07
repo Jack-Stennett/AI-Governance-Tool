@@ -164,6 +164,7 @@ function renderList(el, items, type){
     el.appendChild(wrap);
   });
 }
+// Simple initialization - populate lists immediately
 renderList($('#postures'), CATALOGUE.postures, 'postures');
 renderList($('#institutions'), CATALOGUE.institutions, 'institutions');
 renderList($('#mechanisms'), CATALOGUE.mechanisms, 'mechanisms');
@@ -240,40 +241,22 @@ function chip(id, label, layer, desc){
 }
 function syncBuild(){
   const {posture,insts,mechs,ctrls} = currentSelections();
-  console.log('syncBuild called with:', {posture, insts, mechs, ctrls});
-  
   const find = (arr,id)=>arr.find(x=>x.id===id);
 
-  const pBox = $('#picked-posture'); 
-  console.log('pBox found:', !!pBox);
-  if (pBox) {
-    pBox.innerHTML='';
-    if(posture){ const it = CATALOGUE.postures.find(p=>p.id===posture); pBox.appendChild(chip(it.id, it.label, 'posture', it.desc)); }
-  }
+  const pBox = $('#picked-posture'); pBox.innerHTML='';
+  if(posture){ const it = CATALOGUE.postures.find(p=>p.id===posture); pBox.appendChild(chip(it.id, it.label, 'posture', it.desc)); }
 
-  const iBox = $('#picked-institutions');
-  if (iBox) {
-    iBox.innerHTML='';
-    insts.forEach(id=>{ const it = find(CATALOGUE.institutions,id); iBox.appendChild(chip(id,it.label,'institution',it.desc)); });
-  }
+  const iBox = $('#picked-institutions'); iBox.innerHTML='';
+  insts.forEach(id=>{ const it = find(CATALOGUE.institutions,id); iBox.appendChild(chip(id,it.label,'institution',it.desc)); });
 
-  const mBox = $('#picked-mechanisms');
-  if (mBox) {
-    mBox.innerHTML='';
-    mechs.forEach(id=>{ const it = find(CATALOGUE.mechanisms,id); mBox.appendChild(chip(id,it.label,'mechanism',it.desc)); });
-  }
+  const mBox = $('#picked-mechanisms'); mBox.innerHTML='';
+  mechs.forEach(id=>{ const it = find(CATALOGUE.mechanisms,id); mBox.appendChild(chip(id,it.label,'mechanism',it.desc)); });
 
-  const cBox = $('#picked-controls');
-  if (cBox) {
-    cBox.innerHTML='';
-    ctrls.forEach(id=>{ const it = find(CATALOGUE.controls,id); cBox.appendChild(chip(id,it.label,'control',it.desc)); });
-  }
+  const cBox = $('#picked-controls'); cBox.innerHTML='';
+  ctrls.forEach(id=>{ const it = find(CATALOGUE.controls,id); cBox.appendChild(chip(id,it.label,'control',it.desc)); });
 
   enforceAffordability();
-  const lockBtn = $('#lockBtn');
-  if (lockBtn) {
-    lockBtn.disabled = !posture;
-  }
+  $('#lockBtn').disabled = !posture;
 }
 document.body.addEventListener('change', syncBuild);
 
@@ -281,10 +264,9 @@ $('#lockBtn').addEventListener('click', ()=>{
   locked = true;
   document.querySelectorAll('input').forEach(i=> i.disabled = true);
   $('#rollBtn').disabled = false;
-  $('#mcBtn').disabled = false;
   const card = $('#resultCard');
   card.classList.remove('muted');
-  card.innerHTML = `<h3>Locked</h3><p>Selections frozen. Roll for outcome, or run Monte Carlo.</p>`;
+  card.innerHTML = `<h3>Locked</h3><p>Selections frozen. Roll for outcome.</p>`;
 });
 
 $('#resetBtn').addEventListener('click', ()=>{
@@ -297,17 +279,17 @@ $('#resetBtn').addEventListener('click', ()=>{
   
   // Reset buttons
   $('#rollBtn').disabled = true;
-  $('#mcBtn').disabled = true;
   
   // Clear results
   const card = $('#resultCard');
   card.classList.add('muted');
-  card.innerHTML = '<h3>Outcome</h3><p>Choose, Lock In, then roll. Temperature and coherence matter; low temperatures make failure commonplace.</p>';
+  card.innerHTML = '<h3>Outcome</h3><p>Choose, Lock In, then roll.</p>';
   
-  // Hide Monte Carlo results
-  $('#mcCard').classList.add('hidden');
+  // Clear Monte Carlo results
+  const mcCard = $('#mcCard');
+  mcCard.classList.add('hidden');
   
-  // Refresh the build display
+  // Sync the build to update display
   syncBuild();
 });
 
@@ -449,7 +431,7 @@ $('#rollBtn').addEventListener('click', ()=>{
     <p class="meta">Model: prob = clamp((0.03 + 0.38·score + 0.18·T + noise) × headwind[T<0.2]); noise ±0.15.</p>`;
 });
 
-$('#mcBtn').addEventListener('click', ()=>{
+function runMonteCarlo() {
   const N = 1000, counts=[0,0,0,0];
   for(let i=0;i<N;i++){
     const res = evaluateOnce(Math.random);
