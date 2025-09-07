@@ -240,22 +240,40 @@ function chip(id, label, layer, desc){
 }
 function syncBuild(){
   const {posture,insts,mechs,ctrls} = currentSelections();
+  console.log('syncBuild called with:', {posture, insts, mechs, ctrls});
+  
   const find = (arr,id)=>arr.find(x=>x.id===id);
 
-  const pBox = $('#picked-posture'); pBox.innerHTML='';
-  if(posture){ const it = CATALOGUE.postures.find(p=>p.id===posture); pBox.appendChild(chip(it.id, it.label, 'posture', it.desc)); }
+  const pBox = $('#picked-posture'); 
+  console.log('pBox found:', !!pBox);
+  if (pBox) {
+    pBox.innerHTML='';
+    if(posture){ const it = CATALOGUE.postures.find(p=>p.id===posture); pBox.appendChild(chip(it.id, it.label, 'posture', it.desc)); }
+  }
 
-  const iBox = $('#picked-institutions'); iBox.innerHTML='';
-  insts.forEach(id=>{ const it = find(CATALOGUE.institutions,id); iBox.appendChild(chip(id,it.label,'institution',it.desc)); });
+  const iBox = $('#picked-institutions');
+  if (iBox) {
+    iBox.innerHTML='';
+    insts.forEach(id=>{ const it = find(CATALOGUE.institutions,id); iBox.appendChild(chip(id,it.label,'institution',it.desc)); });
+  }
 
-  const mBox = $('#picked-mechanisms'); mBox.innerHTML='';
-  mechs.forEach(id=>{ const it = find(CATALOGUE.mechanisms,id); mBox.appendChild(chip(id,it.label,'mechanism',it.desc)); });
+  const mBox = $('#picked-mechanisms');
+  if (mBox) {
+    mBox.innerHTML='';
+    mechs.forEach(id=>{ const it = find(CATALOGUE.mechanisms,id); mBox.appendChild(chip(id,it.label,'mechanism',it.desc)); });
+  }
 
-  const cBox = $('#picked-controls'); cBox.innerHTML='';
-  ctrls.forEach(id=>{ const it = find(CATALOGUE.controls,id); cBox.appendChild(chip(id,it.label,'control',it.desc)); });
+  const cBox = $('#picked-controls');
+  if (cBox) {
+    cBox.innerHTML='';
+    ctrls.forEach(id=>{ const it = find(CATALOGUE.controls,id); cBox.appendChild(chip(id,it.label,'control',it.desc)); });
+  }
 
   enforceAffordability();
-  $('#lockBtn').disabled = !posture;
+  const lockBtn = $('#lockBtn');
+  if (lockBtn) {
+    lockBtn.disabled = !posture;
+  }
 }
 document.body.addEventListener('change', syncBuild);
 
