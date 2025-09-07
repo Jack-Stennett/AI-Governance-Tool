@@ -134,6 +134,15 @@ function attachTooltip(el, label, desc){
 }
 
 function renderList(el, items, type){
+  if (!el) {
+    console.error(`Element not found for type: ${type}`);
+    return;
+  }
+  console.log(`Rendering ${items.length} items for ${type} into element:`, el);
+  
+  // Clear existing content
+  el.innerHTML = '';
+  
   items.forEach(x => {
     const wrap = document.createElement('label');
     wrap.className = 'item';
@@ -163,12 +172,32 @@ function renderList(el, items, type){
     attachTooltip(wrap, x.label, x.desc);
     el.appendChild(wrap);
   });
+  
+  console.log(`Finished rendering ${type}, element now has ${el.children.length} children`);
 }
-// Simple initialization - populate lists immediately
-renderList($('#postures'), CATALOGUE.postures, 'postures');
-renderList($('#institutions'), CATALOGUE.institutions, 'institutions');
-renderList($('#mechanisms'), CATALOGUE.mechanisms, 'mechanisms');
-renderList($('#controls'), CATALOGUE.controls, 'controls');
+// Initialize lists when DOM is ready
+function initializeLists() {
+  const posturesEl = document.getElementById('postures');
+  const institutionsEl = document.getElementById('institutions');
+  const mechanismsEl = document.getElementById('mechanisms');
+  const controlsEl = document.getElementById('controls');
+  
+  if (posturesEl) renderList(posturesEl, CATALOGUE.postures, 'postures');
+  if (institutionsEl) renderList(institutionsEl, CATALOGUE.institutions, 'institutions');
+  if (mechanismsEl) renderList(mechanismsEl, CATALOGUE.mechanisms, 'mechanisms');
+  if (controlsEl) renderList(controlsEl, CATALOGUE.controls, 'controls');
+  
+  console.log('Lists initialized:', {
+    postures: !!posturesEl && posturesEl.children.length,
+    institutions: !!institutionsEl && institutionsEl.children.length,
+    mechanisms: !!mechanismsEl && mechanismsEl.children.length,
+    controls: !!controlsEl && controlsEl.children.length
+  });
+}
+
+// Try to initialize immediately and also on DOM ready
+initializeLists();
+document.addEventListener('DOMContentLoaded', initializeLists);
 
 let mode = 'medium';
 let budget = 0, pc = 0, locked = false;
