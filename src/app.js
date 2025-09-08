@@ -198,13 +198,83 @@ function updateBudgetDisplay() {
   strategy.totalCost = totalCost;
   strategy.totalPoliticalCost = totalPC;
   
+  // Determine budget status
+  const budgetOverspent = totalCost > strategy.availableBudget;
+  const pcOverspent = totalPC > strategy.availablePC;
+  const isOverBudget = budgetOverspent || pcOverspent;
+  const isWarning = (totalCost > strategy.availableBudget * 0.8) || (totalPC > strategy.availablePC * 0.8);
+  
   // Update any budget displays on current page
   const budgetDisplays = document.querySelectorAll('.budget-display');
   budgetDisplays.forEach(display => {
+    // Remove existing classes
+    display.classList.remove('warning', 'over-budget');
+    
+    // Add appropriate class
+    if (isOverBudget) {
+      display.classList.add('over-budget');
+    } else if (isWarning) {
+      display.classList.add('warning');
+    }
+    
+    let warningMessage = '';
+    if (isOverBudget) {
+      warningMessage = '<div style="color: var(--danger-color); font-size: 0.8rem; text-align: center; margin-top: 0.5rem;">⚠️ OVER BUDGET - Remove some selections</div>';
+    } else if (isWarning) {
+      warningMessage = '<div style="color: var(--warning-color); font-size: 0.8rem; text-align: center; margin-top: 0.5rem;">⚠️ Approaching budget limits</div>';
+    }
+    
     display.innerHTML = `
-      <span>Budget: $${totalCost}B / $${strategy.availableBudget}B</span>
-      <span>Political Capital: ${totalPC} / ${strategy.availablePC} PC</span>
+      <span ${budgetOverspent ? 'style="color: var(--danger-color);"' : ''}>Budget: $${totalCost}B / $${strategy.availableBudget}B</span>
+      <span ${pcOverspent ? 'style="color: var(--danger-color);"' : ''}>Political Capital: ${totalPC} / ${strategy.availablePC} PC</span>
+      ${warningMessage}
     `;
+  });
+  
+  // Update affordability of all option cards
+  updateOptionAffordability();
+}
+
+function isAffordable(itemId) {
+  const cost = getCost(itemId);
+  if (!cost) return true;
+  
+  const newTotalCost = strategy.totalCost + cost.usd_billion;
+  const newTotalPC = strategy.totalPoliticalCost + cost.pc;
+  
+  return newTotalCost <= strategy.availableBudget && newTotalPC <= strategy.availablePC;
+}
+
+function updateOptionAffordability() {
+  // Update all option cards based on current affordability
+  const allCards = document.querySelectorAll('.option-card');
+  allCards.forEach(card => {
+    const itemId = card.getAttribute('data-id');
+    const checkbox = card.querySelector('input[type="checkbox"]');
+    
+    if (checkbox && !checkbox.checked) {
+      // Only check affordability for unselected checkboxes
+      const affordable = isAffordable(itemId);
+      card.classList.toggle('unaffordable', !affordable);
+      
+      if (!affordable) {
+        // Add cost warning
+        const cost = getCost(itemId);
+        let warningText = card.querySelector('.cost-warning');
+        if (!warningText) {
+          warningText = document.createElement('div');
+          warningText.className = 'cost-warning';
+          card.querySelector('label').appendChild(warningText);
+        }
+        warningText.textContent = `Cannot afford: $${cost.usd_billion}B, ${cost.pc} PC`;
+      } else {
+        // Remove cost warning if it exists
+        const warningText = card.querySelector('.cost-warning');
+        if (warningText) {
+          warningText.remove();
+        }
+      }
+    }
   });
 }
 
@@ -347,11 +417,55 @@ function createOptionCard(item, type, isSelected = false) {
       // Checkbox - update arrays
       const category = strategy[type];
       if (input.checked) {
-        if (!category.includes(item.id)) {
-          category.push(item.id);
+        // Check if we can afford this selection
+        const cost = getCost(item.id);
+        const newTotalCost = strategy.totalCost + (cost ? cost.usd_billion : 0);
+        const newTotalPC = strategy.totalPoliticalCost + (cost ? cost.pc : 0);
+        
+        if (newTotalCost <= strategy.availableBudget && newTotalPC <= strategy.availablePC) {
+          // Can afford - proceed with selection
+          if (!category.includes(item.id)) {
+            category.push(item.id);
+          }
+          card.classList.add('selected');
+        } else {
+          // Cannot afford - prevent selection and show warning
+          input.checked = false;
+          
+          // Create temporary warning popup
+          const warning = document.createElement('div');
+          warning.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--danger-color);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            z-index: 10000;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+          `;
+          
+          if (newTotalCost > strategy.availableBudget && newTotalPC > strategy.availablePC) {
+            warning.textContent = `Cannot afford ${item.label}: Exceeds both budget ($${cost.usd_billion}B needed) and political capital (${cost.pc} PC needed)`;
+          } else if (newTotalCost > strategy.availableBudget) {
+            warning.textContent = `Cannot afford ${item.label}: Exceeds budget by $${newTotalCost - strategy.availableBudget}B`;
+          } else {
+            warning.textContent = `Cannot afford ${item.label}: Exceeds political capital by ${newTotalPC - strategy.availablePC} PC`;
+          }
+          
+          document.body.appendChild(warning);
+          setTimeout(() => {
+            if (warning.parentNode) {
+              warning.parentNode.removeChild(warning);
+            }
+          }, 3000);
         }
-        card.classList.add('selected');
       } else {
+        // Unchecking - always allowed
         const index = category.indexOf(item.id);
         if (index > -1) {
           category.splice(index, 1);
@@ -387,6 +501,9 @@ function populateInstitutionsPage() {
     const card = createOptionCard(institution, 'institutions', strategy.institutions.includes(institution.id));
     grid.appendChild(card);
   });
+  
+  // Update affordability after populating
+  setTimeout(() => updateOptionAffordability(), 0);
 }
 
 function populateMechanismsPage() {
@@ -398,6 +515,9 @@ function populateMechanismsPage() {
     const card = createOptionCard(mechanism, 'mechanisms', strategy.mechanisms.includes(mechanism.id));
     grid.appendChild(card);
   });
+  
+  // Update affordability after populating
+  setTimeout(() => updateOptionAffordability(), 0);
 }
 
 function populateControlsPage() {
@@ -409,6 +529,9 @@ function populateControlsPage() {
     const card = createOptionCard(control, 'controls', strategy.controls.includes(control.id));
     grid.appendChild(card);
   });
+  
+  // Update affordability after populating
+  setTimeout(() => updateOptionAffordability(), 0);
 }
 
 function displayStrategy() {
@@ -448,36 +571,333 @@ function displayStrategy() {
   `;
 }
 
+// Advanced strategy effectiveness calculation system
+const SYNERGY_MATRIX = {
+  // Strong synergies between complementary mechanisms
+  'iaisa_transparency': 0.15, // International agency + transparency
+  'iaisa_auditor': 0.12, // International agency + auditing
+  'regulator_liability': 0.10, // Domestic regulator + liability
+  'regulator_licensing': 0.14, // Domestic regulator + licensing
+  'export_hwverify': 0.16, // Export controls + hardware verification
+  'export_computecaps': 0.13, // Export controls + compute caps
+  'hwverify_computecaps': 0.11, // Hardware verification + compute caps
+  'cloudenf_swverify': 0.09, // Cloud enforcement + software verification
+  'predeploy_staged': 0.12, // Pre-deployment + staged thresholds
+  'transparency_incident': 0.08, // Transparency + incident reporting
+  'whistle_liability': 0.07, // Whistleblower + liability
+  'market_benefits': 0.10, // Market mechanisms + benefit distribution
+  'coord_ipccai': 0.11, // Policy coordination + scientific consensus
+  'moratorium_nonprolif': 0.18, // Global moratorium + non-proliferation
+  'cooperate_cern': 0.14, // Cooperative development + joint research
+};
+
+const CONTRADICTION_PENALTIES = {
+  // Conflicting approaches that reduce effectiveness
+  'laissez_iaisa': -0.25, // Laissez-faire contradicts strong international agency
+  'laissez_regulator': -0.20, // Laissez-faire contradicts domestic regulation
+  'moratorium_stratadv': -0.30, // Moratorium contradicts strategic advantage
+  'moratorium_market': -0.15, // Moratorium contradicts market mechanisms
+  'clubs_cooperate': -0.12, // AI clubs contradict full cooperation
+  'export_ogi': -0.10, // Export controls contradict open global investment
+};
+
+const POSTURE_REQUIREMENTS = {
+  // Required mechanisms for specific postures to be effective
+  'moratorium': ['iaisa', 'export', 'hwverify'], // Global moratorium needs enforcement
+  'cooperate': ['cern', 'coord', 'transparency'], // Cooperation needs shared infrastructure
+  'nonprolif': ['export', 'regulator', 'licensing'], // Non-proliferation needs controls
+  'stratadv': ['export', 'domestic'], // Strategic advantage needs domestic control
+  'mad': ['killswitch', 'hwverify'], // MAD needs reliable controls
+};
+
+function calculateStrategyEffectiveness() {
+  const posture = DATA.postures.find(p => p.id === strategy.posture);
+  if (!posture) return { successRate: 0, analysis: 'No strategic posture selected' };
+  
+  // Start with base success rate from posture
+  let baseRate = posture.base;
+  
+  // Apply temperature effect (environmental favorability)
+  const temp = DIFFICULTY_LEVELS[strategy.difficulty].temp;
+  const tempModifier = (temp / 100) * 0.3 - 0.15; // -0.15 to +0.15
+  let adjustedRate = baseRate + tempModifier;
+  
+  // Calculate synergy bonuses
+  let synergyBonus = 0;
+  const allSelections = [strategy.posture, ...strategy.institutions, ...strategy.mechanisms, ...strategy.controls];
+  
+  // Check for synergies between all pairs
+  for (let i = 0; i < allSelections.length; i++) {
+    for (let j = i + 1; j < allSelections.length; j++) {
+      const key1 = `${allSelections[i]}_${allSelections[j]}`;
+      const key2 = `${allSelections[j]}_${allSelections[i]}`;
+      const bonus = SYNERGY_MATRIX[key1] || SYNERGY_MATRIX[key2] || 0;
+      synergyBonus += bonus;
+    }
+  }
+  
+  // Calculate contradiction penalties
+  let contradictionPenalty = 0;
+  for (let i = 0; i < allSelections.length; i++) {
+    for (let j = i + 1; j < allSelections.length; j++) {
+      const key1 = `${allSelections[i]}_${allSelections[j]}`;
+      const key2 = `${allSelections[j]}_${allSelections[i]}`;
+      const penalty = CONTRADICTION_PENALTIES[key1] || CONTRADICTION_PENALTIES[key2] || 0;
+      contradictionPenalty += penalty;
+    }
+  }
+  
+  // Check requirements fulfillment
+  let requirementPenalty = 0;
+  const requirements = POSTURE_REQUIREMENTS[strategy.posture] || [];
+  const missingRequirements = requirements.filter(req => !allSelections.includes(req));
+  requirementPenalty = missingRequirements.length * -0.08; // -8% per missing requirement
+  
+  // Complexity bonus - more comprehensive strategies get bonus up to a point
+  const totalMechanisms = strategy.institutions.length + strategy.mechanisms.length + strategy.controls.length;
+  let complexityBonus = Math.min(totalMechanisms * 0.02, 0.12); // Max 12% bonus
+  
+  // Diminishing returns for excessive complexity
+  if (totalMechanisms > 10) {
+    complexityBonus -= (totalMechanisms - 10) * 0.01;
+  }
+  
+  // Calculate final success rate
+  const finalRate = Math.max(0, Math.min(1, 
+    adjustedRate + synergyBonus + contradictionPenalty + requirementPenalty + complexityBonus
+  ));
+  
+  return {
+    successRate: finalRate,
+    baseRate: baseRate,
+    tempModifier: tempModifier,
+    synergyBonus: synergyBonus,
+    contradictionPenalty: contradictionPenalty,
+    requirementPenalty: requirementPenalty,
+    complexityBonus: complexityBonus,
+    missingRequirements: missingRequirements,
+    analysis: generateAnalysis(finalRate, synergyBonus, contradictionPenalty, missingRequirements)
+  };
+}
+
+function runMonteCarloSimulation(trials = 1000) {
+  const effectiveness = calculateStrategyEffectiveness();
+  const successRate = effectiveness.successRate;
+  
+  let successes = 0;
+  const outcomes = [];
+  
+  for (let i = 0; i < trials; i++) {
+    const roll = Math.random();
+    const success = roll < successRate;
+    if (success) successes++;
+    outcomes.push(success);
+  }
+  
+  // Calculate confidence intervals
+  const successRatio = successes / trials;
+  const standardError = Math.sqrt(successRatio * (1 - successRatio) / trials);
+  const margin = 1.96 * standardError; // 95% confidence interval
+  
+  return {
+    trials: trials,
+    successes: successes,
+    successRatio: successRatio,
+    confidenceInterval: {
+      lower: Math.max(0, successRatio - margin),
+      upper: Math.min(1, successRatio + margin)
+    },
+    effectiveness: effectiveness
+  };
+}
+
+// Narrative descriptions for each strategic posture
+const POSTURE_NARRATIVES = {
+  success: {
+    'laissez': "Your laissez-faire approach allowed market forces to naturally regulate AI development! The invisible hand of competition drove companies toward safety, and decentralized innovation prevented any single catastrophic failure point. While some concerning incidents occurred, the distributed nature of development meant risks remained manageable.",
+    'clubs': "Your AI alliance strategy created powerful coalitions that successfully coordinated safety efforts! Democratic nations formed effective governance blocs, sharing safety research and establishing common standards. The alliance structure prevented authoritarian regimes from gaining dangerous advantages while maintaining innovation.",
+    'ogi': "Your open global investment approach channeled resources toward safe AI development! By creating massive incentive structures, you concentrated the world's best talent and resources on solving alignment. The coordinated funding eliminated the dangerous race dynamics that previously plagued AI development.",
+    'mad': "Your mutual assured destruction framework successfully established a stable deterrent equilibrium! Nations developed verification systems and maintained credible AI-based deterrence, preventing any actor from attempting a first-strike scenario. The delicate balance held, keeping humanity safe through strategic stability.",
+    'moratorium': "Your global moratorium successfully halted dangerous AI development worldwide! International enforcement mechanisms prevented any nation or company from secretly advancing toward AGI. This breathing room allowed researchers to solve key alignment problems before development resumed under strict safety protocols.",
+    'cooperate': "Your cooperative development strategy united humanity in building safe AI together! International research consortiums solved alignment challenges through unprecedented collaboration. By sharing both the risks and benefits, nations avoided competitive pressures that might have led to cutting corners on safety.",
+    'dacc': "Your differential acceleration strategy successfully prioritized defensive AI capabilities! By investing heavily in AI safety, monitoring, and defensive systems before allowing advanced capabilities, you created a protective umbrella. When AGI finally arrived, robust safety systems were already in place to manage the risks.",
+    'nonprolif': "Your non-proliferation regime successfully contained dangerous AI capabilities! Like nuclear non-proliferation, strict export controls and monitoring prevented the spread of advanced AI systems. This limited the number of actors who could pose existential risks, making governance much more manageable.",
+    'stratadv': "Your strategic advantage approach allowed a responsible actor to secure AGI first! By ensuring that safety-conscious developers reached AGI before less careful competitors, you prevented a dangerous multipolar scenario. The leading actor used their position responsibly, implementing global safety standards from a position of strength."
+  },
+  failure: {
+    'laissez': "Your laissez-faire approach failed to prevent a catastrophic race to the bottom. Without coordination mechanisms, competitive pressures drove companies to cut corners on safety. Multiple labs rushed toward AGI simultaneously, and the lack of oversight led to a preventable disaster when alignment problems proved more severe than anticipated.",
+    'clubs': "Your AI alliance strategy collapsed due to competing national interests. Democratic coalitions fractured under pressure, while authoritarian regimes exploited the divisions. The alliance structure created an 'us vs them' dynamic that accelerated dangerous competition rather than enabling cooperation on safety.",
+    'ogi': "Your open global investment approach created perverse incentives that prioritized speed over safety. The massive funding attracted opportunistic actors who made grand promises but delivered rushed, dangerous systems. The concentration of resources paradoxically increased rather than decreased competitive pressures.",
+    'mad': "Your mutual assured destruction framework collapsed catastrophically. The verification systems proved inadequate, trust eroded between nations, and the hair-trigger nature of the deterrent balance led to an accidental escalation. What was meant to preserve stability instead created the very conflict it sought to prevent.",
+    'moratorium': "Your global moratorium fell apart due to enforcement failures and defection incentives. Secret development continued in multiple countries, while the public halt gave these covert programs decisive advantages. When AGI emerged from these shadow projects, there were no safety guardrails in place.",
+    'cooperate': "Your cooperative development strategy foundered on the rocks of national sovereignty and competitive advantage. Countries paid lip service to cooperation while secretly advancing their own programs. The shared research became a cover for intelligence gathering, and trust broke down irreparably.",
+    'dacc': "Your differential acceleration strategy failed because defensive capabilities proved harder to develop than offensive ones. Despite massive investment in safety research, the technical challenges exceeded expectations. When powerful AI systems emerged, the promised safety infrastructure wasn't ready, leaving humanity exposed.",
+    'nonprolif': "Your non-proliferation regime crumbled under the pressure of dual-use technology and enforcement challenges. Unlike nuclear technology, AI capabilities proved impossible to contain - the same techniques had too many legitimate applications. The proliferation you sought to prevent occurred anyway, but now in an adversarial environment.",
+    'stratadv': "Your strategic advantage approach backfired when the 'winner' proved less responsible than anticipated. The chosen leader became corrupted by power, used their AGI advantage for authoritarian control rather than global safety, and established a permanent technological dictatorship that served their interests rather than humanity's."
+  }
+};
+
+function generateSynergyNarrative(synergyBonus, allSelections) {
+  if (synergyBonus <= 0.05) return "";
+  
+  const synergies = [];
+  const selections = [strategy.posture, ...strategy.institutions, ...strategy.mechanisms, ...strategy.controls];
+  
+  // Find the strongest synergies to highlight
+  let maxSynergy = 0;
+  let bestPair = null;
+  
+  for (let i = 0; i < selections.length; i++) {
+    for (let j = i + 1; j < selections.length; j++) {
+      const key1 = `${selections[i]}_${selections[j]}`;
+      const key2 = `${selections[j]}_${selections[i]}`;
+      const bonus = SYNERGY_MATRIX[key1] || SYNERGY_MATRIX[key2] || 0;
+      if (bonus > maxSynergy) {
+        maxSynergy = bonus;
+        bestPair = [selections[i], selections[j]];
+      }
+    }
+  }
+  
+  if (bestPair) {
+    const name1 = getItemName(bestPair[0]);
+    const name2 = getItemName(bestPair[1]);
+    return ` Your ${name1} successfully synergized with ${name2} to significantly enhance governance effectiveness, creating a multiplicative effect that was greater than the sum of its parts.`;
+  }
+  
+  return "";
+}
+
+function getItemName(id) {
+  // Find the human-readable name for an item ID
+  const allItems = [...DATA.postures, ...DATA.institutions, ...DATA.mechanisms, ...DATA.controls];
+  const item = allItems.find(item => item.id === id);
+  return item ? item.label : id;
+}
+
+function generateAnalysis(finalRate, synergyBonus, contradictionPenalty, missingRequirements) {
+  const postureObj = DATA.postures.find(p => p.id === strategy.posture);
+  const postureName = postureObj ? postureObj.label : 'your chosen approach';
+  
+  let narrative = "";
+  
+  // Main outcome narrative based on success/failure and posture
+  if (finalRate > 0.5) {
+    narrative += POSTURE_NARRATIVES.success[strategy.posture] || `Your ${postureName} strategy was broadly successful in managing AI risks and ensuring humanity's safe transition to the AGI era.`;
+  } else {
+    narrative += POSTURE_NARRATIVES.failure[strategy.posture] || `Your ${postureName} strategy ultimately failed to prevent catastrophic outcomes, leaving humanity vulnerable to the risks of uncontrolled AI development.`;
+  }
+  
+  // Add synergy narrative
+  narrative += generateSynergyNarrative(synergyBonus, [strategy.posture, ...strategy.institutions, ...strategy.mechanisms, ...strategy.controls]);
+  
+  // Add failure modes or additional context
+  if (contradictionPenalty < -0.1) {
+    narrative += " However, significant contradictions in your approach undermined its effectiveness - conflicting strategies worked against each other rather than in harmony.";
+  }
+  
+  if (missingRequirements.length > 0) {
+    narrative += ` Critical gaps in implementation became apparent when key requirements (${missingRequirements.map(getItemName).join(', ')}) were not adequately addressed, leaving vulnerabilities that could have been prevented.`;
+  }
+  
+  return narrative;
+}
+
 function evaluateStrategy() {
   const outcomeDiv = document.getElementById('outcome-section');
   
-  // Simple evaluation based on number of selections
-  const totalSelections = strategy.institutions.length + strategy.mechanisms.length + strategy.controls.length;
-  let outcome, description, imageFile;
+  // Run Monte Carlo simulation
+  const simulation = runMonteCarloSimulation(1000);
+  const effectiveness = simulation.effectiveness;
+  const successRate = effectiveness.successRate;
+  const successPercent = Math.round(successRate * 100);
   
-  if (totalSelections >= 8) {
-    outcome = 'Comprehensive Strategy';
-    description = 'You have built a robust, multi-layered approach to AI governance with strong institutional, regulatory, and technical foundations.';
+  // Determine outcome category based on success rate
+  let outcome, description, imageFile, outcomeClass;
+  
+  if (successRate >= 0.7) {
+    outcome = 'Major Success';
+    description = 'Your strategy achieved outstanding results, successfully navigating humanity through the AI transition with minimal casualties and maximum benefit.';
     imageFile = 'spectacular_success.jpg';
-  } else if (totalSelections >= 5) {
-    outcome = 'Balanced Strategy';
-    description = 'Your approach covers key areas of AI governance with a solid foundation for managing AI risks.';
+    outcomeClass = 'success-high';
+  } else if (successRate >= 0.5) {
+    outcome = 'Moderate Success';
+    description = 'Your strategy generally succeeded in managing AI risks, though some challenges and setbacks occurred along the way.';
     imageFile = 'mild_success.jpg';
-  } else if (totalSelections >= 2) {
-    outcome = 'Minimal Strategy';
-    description = 'You have established basic governance mechanisms, but may need additional safeguards for comprehensive AI safety.';
+    outcomeClass = 'success-moderate';
+  } else if (successRate >= 0.3) {
+    outcome = 'Moderate Failure';
+    description = 'Your strategy fell short of preventing significant AI-related harms, though it may have prevented even worse outcomes.';
     imageFile = 'mild_failure.jpg';
+    outcomeClass = 'failure-moderate';
   } else {
-    outcome = 'Insufficient Strategy';
-    description = 'Your current approach may not provide adequate protection against AI risks. Consider adding more governance mechanisms.';
+    outcome = 'Catastrophic Failure';
+    description = 'Your strategy failed catastrophically, leading to severe consequences for humanity in the AI transition.';
     imageFile = 'spectacular_failure.jpg';
+    outcomeClass = 'failure-high';
   }
   
+  const totalSelections = strategy.institutions.length + strategy.mechanisms.length + strategy.controls.length;
+  const confidenceInterval = simulation.confidenceInterval;
+  
   outcomeDiv.innerHTML = `
-    <div class="outcome-card">
+    <div class="outcome-card ${outcomeClass}">
       <img src="${imageFile}" alt="${outcome}" class="outcome-image" onerror="this.style.display='none'">
       <h3>${outcome}</h3>
       <p>${description}</p>
+      
+      <div class="effectiveness-metrics">
+        <div class="primary-metric">
+          <span class="metric-label">Success Probability</span>
+          <span class="metric-value">${successPercent}%</span>
+          <div class="confidence-interval">
+            95% CI: ${Math.round(confidenceInterval.lower * 100)}% - ${Math.round(confidenceInterval.upper * 100)}%
+          </div>
+        </div>
+        
+        <div class="detailed-metrics">
+          <div class="metric">
+            <span class="metric-label">Base Strategy Rate:</span>
+            <span class="metric-value neutral">${Math.round(effectiveness.baseRate * 100)}%</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Environmental Modifier:</span>
+            <span class="metric-value ${effectiveness.tempModifier >= 0 ? 'positive' : 'negative'}">${effectiveness.tempModifier >= 0 ? '+' : ''}${Math.round(effectiveness.tempModifier * 100)}%</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Synergy Bonus:</span>
+            <span class="metric-value ${effectiveness.synergyBonus > 0 ? 'positive' : 'neutral'}">+${Math.round(effectiveness.synergyBonus * 100)}%</span>
+          </div>
+          ${effectiveness.contradictionPenalty < 0 ? `
+          <div class="metric">
+            <span class="metric-label">Contradiction Penalty:</span>
+            <span class="metric-value negative">${Math.round(effectiveness.contradictionPenalty * 100)}%</span>
+          </div>` : ''}
+          ${effectiveness.requirementPenalty < 0 ? `
+          <div class="metric">
+            <span class="metric-label">Missing Requirements:</span>
+            <span class="metric-value negative">${Math.round(effectiveness.requirementPenalty * 100)}%</span>
+          </div>` : ''}
+          <div class="metric">
+            <span class="metric-label">Complexity Bonus:</span>
+            <span class="metric-value ${effectiveness.complexityBonus >= 0 ? 'positive' : 'negative'}">${effectiveness.complexityBonus >= 0 ? '+' : ''}${Math.round(effectiveness.complexityBonus * 100)}%</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="simulation-results">
+        <h4>Monte Carlo Analysis (1,000 trials)</h4>
+        <div class="sim-stat">
+          <span class="sim-label">Successful Outcomes:</span>
+          <span class="sim-value">${simulation.successes} / ${simulation.trials}</span>
+        </div>
+      </div>
+      
+      <div class="strategy-analysis">
+        <h4>Strategic Analysis</h4>
+        <p>${effectiveness.analysis}</p>
+      </div>
+      
       <div class="outcome-stats">
         <div class="stat">
           <span class="stat-label">Total Mechanisms:</span>
@@ -486,6 +906,10 @@ function evaluateStrategy() {
         <div class="stat">
           <span class="stat-label">Strategic Approach:</span>
           <span class="stat-value">${DATA.postures.find(p => p.id === strategy.posture)?.label || 'None'}</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Difficulty:</span>
+          <span class="stat-value">${DIFFICULTY_LEVELS[strategy.difficulty]?.label || 'None'}</span>
         </div>
       </div>
     </div>
