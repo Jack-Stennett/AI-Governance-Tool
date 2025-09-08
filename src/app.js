@@ -229,13 +229,94 @@ function showResults() {
   evaluateStrategy();
 }
 
-// Create option cards
+// Populate difficulty page
+function populateDifficultyPage() {
+  const grid = document.getElementById('difficulty-grid');
+  if (!grid) return;
+  
+  grid.innerHTML = '';
+  
+  Object.entries(DIFFICULTY_LEVELS).forEach(([key, difficulty]) => {
+    const card = document.createElement('div');
+    card.className = `option-card ${strategy.difficulty === key ? 'selected' : ''}`;
+    card.setAttribute('data-id', key);
+    
+    card.innerHTML = `
+      <input type="radio" name="difficulty" value="${key}" ${strategy.difficulty === key ? 'checked' : ''} id="difficulty-${key}">
+      <label for="difficulty-${key}">
+        <h3>${difficulty.label}</h3>
+        <p>${difficulty.desc}</p>
+      </label>
+    `;
+    
+    const input = card.querySelector('input');
+    input.addEventListener('change', () => {
+      strategy.difficulty = key;
+      // Update all cards
+      grid.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      // Enable next button
+      document.getElementById('next-to-page2').disabled = false;
+    });
+    
+    grid.appendChild(card);
+  });
+}
+
+// Populate resources page
+function populateResourcesPage() {
+  const grid = document.getElementById('resources-grid');
+  if (!grid) return;
+  
+  grid.innerHTML = '';
+  
+  Object.entries(RESOURCE_LEVELS).forEach(([key, resource]) => {
+    const card = document.createElement('div');
+    card.className = `option-card ${strategy.resources === key ? 'selected' : ''}`;
+    card.setAttribute('data-id', key);
+    
+    card.innerHTML = `
+      <input type="radio" name="resources" value="${key}" ${strategy.resources === key ? 'checked' : ''} id="resources-${key}">
+      <label for="resources-${key}">
+        <h3>${resource.label}</h3>
+        <p>${resource.desc}</p>
+      </label>
+    `;
+    
+    const input = card.querySelector('input');
+    input.addEventListener('change', () => {
+      strategy.resources = key;
+      strategy.availableBudget = resource.budget;
+      strategy.availablePC = resource.pc;
+      // Update all cards
+      grid.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      // Enable next button
+      document.getElementById('next-to-page3').disabled = false;
+    });
+    
+    grid.appendChild(card);
+  });
+}
+
+// Create option cards for strategy pages
 function createOptionCard(item, type, isSelected = false) {
   const card = document.createElement('div');
   card.className = `option-card ${isSelected ? 'selected' : ''}`;
   card.setAttribute('data-id', item.id);
   
   const isRadio = type === 'postures';
+  
+  // Get cost information
+  let costText = '';
+  if (!isRadio) {
+    const cost = getCost(item.id);
+    if (cost && (cost.usd_billion > 0 || cost.pc > 0)) {
+      costText = ` ($${cost.usd_billion}B, ${cost.pc} PC)`;
+    } else {
+      costText = ' (Free)';
+    }
+  }
   
   card.innerHTML = `
     <input type="${isRadio ? 'radio' : 'checkbox'}" 
@@ -244,7 +325,7 @@ function createOptionCard(item, type, isSelected = false) {
            ${isSelected ? 'checked' : ''}
            id="${type}-${item.id}">
     <label for="${type}-${item.id}">
-      <h3>${item.label}</h3>
+      <h3>${item.label}${costText}</h3>
       <p>${item.desc}</p>
     </label>
   `;
@@ -261,7 +342,7 @@ function createOptionCard(item, type, isSelected = false) {
       });
       card.classList.add('selected');
       // Enable next button
-      document.getElementById('next-to-page2').disabled = false;
+      document.getElementById('next-to-page4').disabled = false;
     } else {
       // Checkbox - update arrays
       const category = strategy[type];
@@ -277,15 +358,18 @@ function createOptionCard(item, type, isSelected = false) {
         }
         card.classList.remove('selected');
       }
+      // Update budget display
+      updateBudgetDisplay();
     }
   });
   
   return card;
 }
 
-// Populate page options
-function populatePage1() {
+// Populate strategy pages
+function populatePosturesPage() {
   const grid = document.getElementById('postures-grid');
+  if (!grid) return;
   grid.innerHTML = '';
   
   DATA.postures.forEach(posture => {
@@ -294,8 +378,9 @@ function populatePage1() {
   });
 }
 
-function populatePage2() {
+function populateInstitutionsPage() {
   const grid = document.getElementById('institutions-grid');
+  if (!grid) return;
   grid.innerHTML = '';
   
   DATA.institutions.forEach(institution => {
@@ -304,8 +389,9 @@ function populatePage2() {
   });
 }
 
-function populatePage3() {
+function populateMechanismsPage() {
   const grid = document.getElementById('mechanisms-grid');
+  if (!grid) return;
   grid.innerHTML = '';
   
   DATA.mechanisms.forEach(mechanism => {
@@ -314,8 +400,9 @@ function populatePage3() {
   });
 }
 
-function populatePage4() {
+function populateControlsPage() {
   const grid = document.getElementById('controls-grid');
+  if (!grid) return;
   grid.innerHTML = '';
   
   DATA.controls.forEach(control => {
@@ -409,10 +496,12 @@ function evaluateStrategy() {
 document.addEventListener('DOMContentLoaded', function() {
   
   // Populate all pages
-  populatePage1();
-  populatePage2();
-  populatePage3();
-  populatePage4();
+  populateDifficultyPage();
+  populateResourcesPage();
+  populatePosturesPage();
+  populateInstitutionsPage();
+  populateMechanismsPage();
+  populateControlsPage();
   
   // Navigation event listeners
   document.getElementById('next-to-page2').addEventListener('click', () => showPage(2));
@@ -421,23 +510,38 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('back-to-page2').addEventListener('click', () => showPage(2));
   document.getElementById('next-to-page4').addEventListener('click', () => showPage(4));
   document.getElementById('back-to-page3').addEventListener('click', () => showPage(3));
+  document.getElementById('next-to-page5').addEventListener('click', () => showPage(5));
+  document.getElementById('back-to-page4').addEventListener('click', () => showPage(4));
+  document.getElementById('next-to-page6').addEventListener('click', () => showPage(6));
+  document.getElementById('back-to-page5').addEventListener('click', () => showPage(5));
   document.getElementById('complete-strategy').addEventListener('click', () => showResults());
+  
   document.getElementById('start-over').addEventListener('click', () => {
     // Reset strategy
+    strategy.difficulty = null;
+    strategy.resources = null;
     strategy.posture = null;
     strategy.institutions = [];
     strategy.mechanisms = [];
     strategy.controls = [];
+    strategy.totalCost = 0;
+    strategy.totalPoliticalCost = 0;
+    strategy.availableBudget = 0;
+    strategy.availablePC = 0;
     
     // Repopulate pages and go to page 1
-    populatePage1();
-    populatePage2();
-    populatePage3();
-    populatePage4();
+    populateDifficultyPage();
+    populateResourcesPage();
+    populatePosturesPage();
+    populateInstitutionsPage();
+    populateMechanismsPage();
+    populateControlsPage();
     showPage(1);
     
-    // Disable next button on page 1
+    // Disable next buttons
     document.getElementById('next-to-page2').disabled = true;
+    document.getElementById('next-to-page3').disabled = true;
+    document.getElementById('next-to-page4').disabled = true;
   });
   
 });
